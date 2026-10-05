@@ -90,91 +90,88 @@
 }
 
 /* ── 本文 ─────────────────────────── */
+/* 余白・間隔は論理プロパティ（block / inline）で書き、横書き・縦書きの両方で同じ見た目になるようにする */
 
 .tp-para {
+  margin: 0;
   line-height: 1.95;
-  text-indent: 1em;
   text-align: justify;
   line-break: strict;
   overflow-wrap: anywhere;
-  margin: 0 0 0.45em;
-}
-
-.tp-para--cont,
-.tp-para--dialogue {
-  text-indent: 0;
 }
 
 .tp-msg {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin: 0.35em 0 0.8em;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  margin-block: 0.35em;
+  margin-inline-start: 1em;
+  padding-block: 0.55em;
+  padding-inline: 0.8em;
+  border: 1px solid rgba(42, 37, 30, 0.22);
+  border-radius: 0.5em;
+  background: rgba(255, 253, 248, 0.7);
+  box-shadow: 0 1px 0 rgba(42, 37, 30, 0.05);
+  font-size: 0.88em;
+  line-height: 1.75;
+  letter-spacing: 0.02em;
 }
 
-.tp-msg--right {
-  align-items: flex-end;
+.tp-msg__line {
+  margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .tp-msg__from {
-  font-family: var(--font-sans);
-  font-size: 0.62em;
+  font-weight: 700;
   color: var(--ink-soft);
-  margin: 0 0 0.25em 0.6em;
 }
 
-.tp-msg__bubble {
-  max-width: 86%;
-  margin: 0;
-  padding: 0.5em 0.95em;
-  border-radius: 1.1em;
-  font-family: var(--font-sans);
-  font-size: 0.82em;
-  line-height: 1.6;
-  letter-spacing: 0.02em;
-  overflow-wrap: anywhere;
-  background: #fffdf8;
-  border: 1px solid rgba(42, 37, 30, 0.14);
-  border-top-left-radius: 0.3em;
-  box-shadow: 0 1px 0 rgba(42, 37, 30, 0.06);
-}
-
-.tp-msg--right .tp-msg__bubble {
-  background: #cfe0c3;
-  border-color: rgba(60, 90, 50, 0.18);
-  border-top-left-radius: 1.1em;
-  border-top-right-radius: 0.3em;
+.tp-msg__from::after {
+  content: "：";
 }
 
 .tp-break {
+  margin-block: 0.6em;
   text-align: center;
   font-size: 0.8em;
   color: var(--ink-soft);
-  margin: 0.6em 0 1.4em;
-  letter-spacing: 1em;
-  text-indent: 1em;
 }
 
-/* 将来の縦書きモード（writingMode: "vertical"）用 */
+/* ── 縦書き ─────────────────────────── */
+
 .book-page--vertical .book-page__body {
   writing-mode: vertical-rl;
+  text-orientation: mixed;
   padding-top: 0;
 }
 
 .book-page--vertical .tp-para {
-  margin: 0 0 0 0.45em;
+  line-height: 1.85;
+}
+
+.book-page--vertical .tp-msg {
+  line-height: 1.7;
+}
+
+/* 縦中横（「AI」などの短い半角英数字） */
+.book-page--vertical .tcy {
+  text-combine-upright: all;
+}
+
+.book-page--vertical .end-page__actions,
+.book-page--vertical .image-page {
+  writing-mode: horizontal-tb;
 }
 
 /* ── 章扉 ─────────────────────────── */
 
 .title-page {
-  height: 100%;
+  block-size: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding-bottom: 8%;
 }
 
 .title-page__novel {
@@ -189,14 +186,14 @@
   display: flex;
   align-items: center;
   gap: 0.8em;
-  margin: 1.4em 0 1.8em;
+  margin-block: 1.4em 1.8em;
   font-size: 0.55em;
   color: #6f86a8;
 }
 
 .title-page__ornament span {
-  width: 3.5em;
-  height: 1px;
+  inline-size: 3.5em;
+  block-size: 1px;
   background: currentColor;
   opacity: 0.6;
 }
@@ -206,13 +203,13 @@
   font-weight: 600;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.7em;
 }
 
 .title-page__number {
   font-size: 0.85em;
   letter-spacing: 0.5em;
-  text-indent: 0.5em;
   color: var(--ink-soft);
   font-weight: 400;
 }
@@ -220,18 +217,17 @@
 .title-page__name {
   font-size: 1.35em;
   letter-spacing: 0.12em;
-  text-indent: 0.12em;
   word-break: keep-all;
 }
 
 .title-page__subtitle {
-  margin-top: 1em;
+  margin-block-start: 1em;
   font-size: 0.85em;
   color: var(--ink-soft);
 }
 
 .title-page__author {
-  margin-top: 3.2em;
+  margin-block-start: 3.2em;
   font-size: 0.85em;
   letter-spacing: 0.2em;
 }
@@ -306,14 +302,13 @@
 /* ── 終わりのページ ─────────────────── */
 
 .end-page {
-  height: 100%;
+  block-size: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
   gap: 1.2em;
-  padding-bottom: 10%;
 }
 
 .end-page__mark {
@@ -324,12 +319,11 @@
 .end-page__next {
   font-size: 0.8em;
   letter-spacing: 0.6em;
-  text-indent: 0.6em;
   color: var(--ink-soft);
 }
 
 .end-page__actions {
-  margin-top: 2.4em;
+  margin-block-start: 2.4em;
   display: flex;
   flex-direction: column;
   gap: 0.6em;

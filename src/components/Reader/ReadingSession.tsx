@@ -12,6 +12,7 @@ import { Reader } from "./Reader";
 interface Props {
   novel: Novel;
   mode: "start" | "resume";
+  /** 省略時は作品データの writingMode に従う */
   writingMode?: WritingMode;
   onExit: () => void;
 }
@@ -23,7 +24,7 @@ const BEGINNING: ReadingAnchor = { chapterIndex: 0, pageIndex: 0, paragraphIndex
  * フォント読み込み → 画面サイズに合わせたページ割り付け → オープニング演出 → 読書画面、の順に進む。
  * 画面サイズが変わったら割り付け直し、読んでいた位置（アンカー）を保ったまま本を作り直す。
  */
-export function ReadingSession({ novel, mode, writingMode = "horizontal", onExit }: Props) {
+export function ReadingSession({ novel, mode, writingMode = novel.writingMode ?? "horizontal", onExit }: Props) {
   const viewport = useViewport();
   const layout = useMemo(() => computeBookLayout(viewport), [viewport]);
   const [fontsReady, setFontsReady] = useState(false);
@@ -94,7 +95,13 @@ export function ReadingSession({ novel, mode, writingMode = "horizontal", onExit
         <div className="reader__loading">本を開いています…</div>
       )}
       {!openingDone && (
-        <OpeningAnimation novel={novel} layout={layout} readerReady={!!pages} onDone={() => setOpeningDone(true)} />
+        <OpeningAnimation
+          novel={novel}
+          layout={layout}
+          rtl={writingMode === "vertical"}
+          readerReady={!!pages}
+          onDone={() => setOpeningDone(true)}
+        />
       )}
     </>
   );

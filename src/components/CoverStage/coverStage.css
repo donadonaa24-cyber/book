@@ -65,6 +65,14 @@
   box-shadow: inset 2px 0 3px rgba(0, 0, 0, 0.35);
 }
 
+/* 右綴じの本は小口が左側 */
+.cover-stage__book--bind-right .cover-stage__edge {
+  right: auto;
+  left: -7px;
+  border-radius: 3px 0 0 3px;
+  box-shadow: inset -2px 0 3px rgba(0, 0, 0, 0.35);
+}
+
 .cover-stage--shown .cover-stage__book {
   animation: cover-float 5s ease-in-out infinite;
 }
@@ -80,6 +88,11 @@
   transition: transform 0.38s ease-in, opacity 0.38s ease-in;
   transform: perspective(1200px) rotateY(-14deg) scale(1.04);
   transform-origin: 0 50%;
+}
+
+.cover-stage--opening .cover-stage__book--bind-right {
+  transform: perspective(1200px) rotateY(14deg) scale(1.04);
+  transform-origin: 100% 50%;
 }
 
 .cover-stage__info {

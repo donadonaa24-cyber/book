@@ -28,7 +28,9 @@ const SWIPE_MIN = 40;
 
 /**
  * 読書画面。
- * 画面の右半分をクリック／タップで次ページ、左半分で前ページ。スマホでは左右スワイプにも対応。
+ * 横書き（左綴じ）: 画面の右半分をクリック／タップで次ページ、左半分で前ページ。
+ * 縦書き（右綴じ）: 本物の縦書きの本と同じく、左半分で次ページ、右半分で前ページ。
+ * スマホでは左右スワイプ（紙を引く方向）にも対応。
  */
 export function Reader({ novel, pages, layout, writingMode, startIndex, interactive, onPageChange, onExit }: Props) {
   const bookRef = useRef<FlipBookHandle>(null);
@@ -38,6 +40,8 @@ export function Reader({ novel, pages, layout, writingMode, startIndex, interact
   const suppressClickUntil = useRef(0);
 
   const { pageWidth, pageHeight, spread } = layout;
+  /** 右綴じ（縦書き）。ページは左へ向かって進む */
+  const rtl = writingMode === "vertical";
   const total = useMemo(() => countNumberedPages(pages), [pages]);
 
   const next = useCallback(() => bookRef.current?.api()?.flipNext("bottom"), []);
@@ -105,10 +109,12 @@ export function Reader({ novel, pages, layout, writingMode, startIndex, interact
   useEffect(() => {
     if (!interactive) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") {
+      const forwardKey = rtl ? "ArrowLeft" : "ArrowRight";
+      const backKey = rtl ? "ArrowRight" : "ArrowLeft";
+      if (e.key === forwardKey || e.key === "PageDown" || e.key === " ") {
         e.preventDefault();
         next();
-      } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
+      } else if (e.key === backKey || e.key === "PageUp") {
         e.preventDefault();
         prev();
       } else if (e.key === "Escape") {
@@ -117,7 +123,7 @@ export function Reader({ novel, pages, layout, writingMode, startIndex, interact
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [interactive, next, prev, onExit]);
+  }, [interactive, rtl, next, prev, onExit]);
 
   const isControl = (target: EventTarget | null) =>
     target instanceof Element && !!target.closest("button, a, [data-no-flip]");
@@ -125,7 +131,8 @@ export function Reader({ novel, pages, layout, writingMode, startIndex, interact
   const onStageClick = (e: React.MouseEvent) => {
     if (!interactive || isControl(e.target)) return;
     if (Date.now() < suppressClickUntil.current) return;
-    if (e.clientX >= window.innerWidth / 2) next();
+    const rightSide = e.clientX >= window.innerWidth / 2;
+    if (rightSide !== rtl) next();
     else prev();
   };
 
@@ -142,9 +149,9 @@ export function Reader({ novel, pages, layout, writingMode, startIndex, interact
     const dx = t.clientX - start.x;
     const dy = t.clientY - start.y;
     if (Math.abs(dx) >= SWIPE_MIN && Math.abs(dx) > Math.abs(dy) * 1.2) {
-      // 左へスワイプ = 次のページ（紙を右から左へめくる動き）
+      // 横書きは左へ、縦書きは右へ紙を引くと次のページ
       suppressClickUntil.current = Date.now() + 500;
-      if (dx < 0) next();
+      if (dx < 0 !== rtl) next();
       else prev();
     }
   };
@@ -157,7 +164,7 @@ export function Reader({ novel, pages, layout, writingMode, startIndex, interact
   const pageLabel = numbers.length > 1 ? `${numbers[0]}–${numbers[1]}` : `${numbers[0] ?? 1}`;
 
   return (
-    <div className={`reader ${interactive ? "" : "reader--locked"}`}>
+    <div className={`reader ${rtl ? "reader--rtl" : ""} ${interactive ? "" : "reader--locked"}`}>
       <header className="reader__bar reader__bar--top">
         <div className="reader__heading">
           <span className="reader__novel">{novel.title}</span>
@@ -173,9 +180,11 @@ export function Reader({ novel, pages, layout, writingMode, startIndex, interact
         onClick={onStageClick}
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
-        aria-label="本文。画面の右側をタップで次のページ、左側で前のページ"
+        aria-label={`本文。画面の${rtl ? "左" : "右"}側をタップで次のページ、${rtl ? "右" : "左"}側で前のページ`}
       >
-        <div className={`reader__book ${spread ? "reader__book--spread" : "reader__book--single"}`}>
+        <div
+          className={`reader__book ${spread ? "reader__book--spread" : "reader__book--single"} ${rtl ? "reader__book--rtl" : ""}`}
+        >
           <FlipBook
             ref={bookRef}
             pageWidth={pageWidth}
@@ -189,7 +198,13 @@ export function Reader({ novel, pages, layout, writingMode, startIndex, interact
       </main>
 
       <footer className="reader__bar reader__bar--bottom">
-        <button type="button" className="reader__nav" onClick={prev} aria-label="前のページ" disabled={!interactive}>
+        <button
+          type="button"
+          className="reader__nav"
+          onClick={rtl ? next : prev}
+          aria-label={rtl ? "次のページ" : "前のページ"}
+          disabled={!interactive}
+        >
           ‹
         </button>
         <div className="reader__progress">
@@ -200,7 +215,13 @@ export function Reader({ novel, pages, layout, writingMode, startIndex, interact
             {pageLabel} / {total}
           </span>
         </div>
-        <button type="button" className="reader__nav" onClick={next} aria-label="次のページ" disabled={!interactive}>
+        <button
+          type="button"
+          className="reader__nav"
+          onClick={rtl ? prev : next}
+          aria-label={rtl ? "前のページ" : "次のページ"}
+          disabled={!interactive}
+        >
           ›
         </button>
       </footer>

@@ -4,14 +4,16 @@
  * 画面側のコンポーネントはこの型だけを見て描画する。
  */
 
-/** LINE などのメッセージ画面を模した吹き出し */
+/** LINE などのメッセージ（枠で囲んで表示する） */
+export interface MessageLine {
+  /** 送信者名（原稿の「澪：〜」の「澪」）。省略可 */
+  from?: string;
+  text: string;
+}
+
 export interface MessageBlock {
   type: "message";
-  /** 送信者名（左側の吹き出しの上に小さく表示） */
-  from: string;
-  text: string;
-  /** right = 視点人物が送ったメッセージ / left = 受け取ったメッセージ */
-  side: "left" | "right";
+  lines: MessageLine[];
 }
 
 /** 場面転換（◇） */
@@ -20,8 +22,9 @@ export interface SceneBreak {
 }
 
 /**
- * 本文の1段落。
- * 通常は文字列をそのまま書けばよく、特殊な表示が必要なときだけオブジェクトを使う。
+ * 本文の1行（段落）。
+ * 文字列は書いたとおりに表示する（字下げは原稿の全角スペースをそのまま使う）。
+ * 空文字 "" は空行になる。特殊な表示が必要なときだけオブジェクトを使う。
  */
 export type Paragraph = string | MessageBlock | SceneBreak;
 
@@ -72,8 +75,9 @@ export interface Novel {
   /** 表紙・背表紙のアクセント色（省略時は白系） */
   accentColor?: string;
   description: string;
+  /** 書字方向。vertical = 縦書き・右綴じ（左へページをめくる）。省略時は横書き */
+  writingMode?: WritingMode;
   chapters: Chapter[];
 }
 
-/** 将来の縦書き対応のための書字方向 */
 export type WritingMode = "horizontal" | "vertical";

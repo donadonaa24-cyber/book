@@ -100,7 +100,10 @@ export function CoverStage({ novel, fromRect, progress, onOpen, onClose }: Props
           onClick={() => open(canResume ? "resume" : "start")}
           aria-label={canResume ? "続きから読む" : "本を開く"}
         >
-          <div ref={bookRef} className="cover-stage__book">
+          <div
+            ref={bookRef}
+            className={`cover-stage__book ${novel.writingMode === "vertical" ? "cover-stage__book--bind-right" : ""}`}
+          >
             <BookCover novel={novel} detailed />
             <div className="cover-stage__edge" aria-hidden="true" />
           </div>

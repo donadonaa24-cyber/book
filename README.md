@@ -1,7 +1,7 @@
 # デジタル本棚
 
 本棚から小説を選び、本を手に取って、ページをめくりながら読む Web アプリ（PWA 対応）。
-第一弾として『EchoShion』第一話「みたらしとおはぎ」を収録しています。
+第一弾として『EchoShion』プロローグ「みたらしとおはぎ」を収録しています（縦書き・右綴じ）。
 
 - React + TypeScript + Vite
 - ページめくり: [react-pageflip](https://github.com/Nodlik/react-pageflip)（StPageFlip）
@@ -19,11 +19,13 @@ npm run preview    # ビルド結果の確認（PWA の動作確認はこちら�
 
 ## 操作
 
-| 操作 | 動作 |
-| --- | --- |
-| 画面の右半分をクリック／タップ、左スワイプ、→ キー | 次のページ |
-| 画面の左半分をクリック／タップ、右スワイプ、← キー | 前のページ |
-| 右上「本棚へ戻る」、Esc キー | 本棚へ戻る |
+縦書きの本（右綴じ）は、紙の本と同じく左へ向かって読み進めます。
+
+| 操作 | 縦書き（右綴じ） | 横書き（左綴じ） |
+| --- | --- | --- |
+| 次のページ | 画面の左半分をタップ／右へスワイプ／← キー | 画面の右半分をタップ／左へスワイプ／→ キー |
+| 前のページ | 画面の右半分をタップ／左へスワイプ／→ キー | 画面の左半分をタップ／右へスワイプ／← キー |
+| 本棚へ戻る | 右上「本棚へ戻る」／Esc キー | 同左 |
 
 読書位置は localStorage に自動保存され、次に同じ本を手に取ると「続きから読む」を選べます。
 （ページ番号ではなく「章・元ページ・段落・文字位置」で保存するため、画面サイズが変わっても同じ場所から再開できます）
@@ -39,9 +41,11 @@ src/
     index.ts                本棚に並ぶ作品の一覧
     echoshion/
       index.ts              作品メタデータ（タイトル・著者・表紙・テーマ色など）
-      chapter1.ts           第一話の本文
+      prologue.ts           プロローグの本文（テキスト原稿をそのまま貼り付け）
   types/novel.ts            作品データの型
   lib/
+    manuscript.ts           テキスト原稿 → ページデータの変換
+    typeset.ts              縦中横（「AI」など）の処理
     paginate.ts             画面サイズに合わせたページ割り付け
     progress.ts             読書位置の保存
     bookLayout.ts           画面サイズ → 本のサイズ
@@ -56,28 +60,29 @@ src/
 
 ## 本文を差し替える
 
-`src/data/novels/echoshion/chapter1.ts` を編集します。
+`src/data/novels/echoshion/prologue.ts` の `manuscript` に、テキスト原稿をそのまま貼り付けます。
 
-```ts
-{
-  type: "text",
-  paragraphs: [
-    "1つの文字列が1段落です。段落頭は自動で字下げされます。",
-    "「会話文は字下げしません」",
-    { type: "message", from: "志遠", text: "おわた、かえる", side: "right" }, // LINE 風の吹き出し
-    { type: "break" },                                                      // 場面転換（◇）
-  ],
-},
-{ type: "image", src: "/assets/novels/echoshion/illustrations/xxx.png", caption: "キャプション" },
+```
+　地の文は行頭の全角スペースもそのまま表示されます。
+「会話文」
+
+　空行はそのまま空行になります。
+
+«澪：明日ゴミの日やで
+志遠：知ってる»          ← «〜» は LINE のメッセージ枠（「名前：」付きの行は送信者名を表示）
+
+◇                        ← 場面転換
+［改ページ］              ← 強制改ページ
 ```
 
-- `text` ページの区切りは「必ず改ページする位置」です。1 ページに入りきらない分は、画面サイズに合わせて自動で次のページへ送られます。
-- ページの種類は `title`（章扉）/ `text`（本文）/ `image`（挿絵）の 3 つで、自由に並べられます。
+- 1 ページに入りきらない分は、画面サイズに合わせて自動で次のページへ送られます（ページ先頭の空行は自動で詰めます）。
+- 原稿を使わずに、ページデータ（`title` / `text` / `image`）を直接並べることもできます（型は `src/types/novel.ts`）。
 
 ## 挿絵を追加する
 
 `public/assets/novels/echoshion/illustrations/` に画像を置くだけで反映されます。
-第一話では `mitarashi-ohagi.png` を参照しており、ファイルが無い間は「挿絵（準備中）」のプレースホルダーが表示されます。
+`prologue.ts` の `pages` 配列に `{ type: "image", src: "/assets/novels/echoshion/illustrations/xxx.png", caption: "…" }` を挟むと挿絵ページになります（現在は挿絵なし）。
+ファイルが無い間は「挿絵（準備中）」のプレースホルダーが表示されます。
 
 ## 表紙を差し替える
 
@@ -88,6 +93,7 @@ src/
 ## 小説を追加する
 
 1. `src/data/novels/<作品ID>/` を作り、`index.ts`（メタデータ）と章ファイルを置く
+   （縦書きにする場合は `writingMode: "vertical"`。省略すると横書き）
 2. `src/data/novels/index.ts` の `novels` 配列に追加する
 3. 表紙・挿絵は `public/assets/novels/<作品ID>/` に置く
 
@@ -103,8 +109,13 @@ src/
 公開パスはリポジトリ名から自動で決まります（`BASE_PATH=/<repo>/`）。
 ユーザーサイト（`<user>.github.io`）として公開する場合は、ワークフローの `BASE_PATH` を `/` にしてください。
 
+## 縦書き（右綴じ）の仕組み
+
+- 紙面は `writing-mode: vertical-rl` で組み、割り付けも縦方向（横へのあふれ）で計測します。
+- ページめくりライブラリは左綴じ専用のため、本全体を左右反転して右綴じにし、紙面の中身だけを反転し直しています（`components/Reader/reader.css`）。
+- 見開きでは、右ページが白紙（見返し）、左ページが扉になります。
+
 ## 今後の拡張ポイント
 
-- **縦書き**: `ReadingSession` の `writingMode` に `"vertical"` を渡すと、紙面が `writing-mode: vertical-rl` になり、割り付けも縦方向で計測されます（CSS は `styles/page.css` の `.book-page--vertical`）。右綴じのページめくり方向への対応は今後の課題です。
 - **ページめくりライブラリの差し替え**: `components/Reader/FlipBook.tsx` だけを書き換えれば済むようにしています。
 - **演出の強化**: 本棚・表紙・オープニング・読書画面はそれぞれ独立したコンポーネントです。

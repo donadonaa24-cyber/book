@@ -9,13 +9,16 @@ interface Props {
   className?: string;
   /** 大きく表示するとき（表紙画面）は著者名なども表示 */
   detailed?: boolean;
+  /** 綴じ側。縦書きの本は右綴じ。省略時は作品の書字方向から決める */
+  binding?: "left" | "right";
 }
 
 /**
  * 本の表紙。coverImage を表示し、読み込めない場合は themeColor から表紙を自動生成する。
  * タイトル文字は coverHasTitle が false のとき重ねて表示する。
  */
-export function BookCover({ novel, className, detailed = false }: Props) {
+export function BookCover({ novel, className, detailed = false, binding }: Props) {
+  const side = binding ?? (novel.writingMode === "vertical" ? "right" : "left");
   const [failed, setFailed] = useState(false);
   const showText = failed || !novel.coverHasTitle;
 
@@ -25,7 +28,10 @@ export function BookCover({ novel, className, detailed = false }: Props) {
   } as CSSProperties;
 
   return (
-    <div className={`book-cover ${failed ? "book-cover--fallback" : ""} ${className ?? ""}`} style={style}>
+    <div
+      className={`book-cover book-cover--bind-${side} ${failed ? "book-cover--fallback" : ""} ${className ?? ""}`}
+      style={style}
+    >
       {!failed && (
         <img
           className="book-cover__image"

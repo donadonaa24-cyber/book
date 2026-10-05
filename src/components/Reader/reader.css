@@ -92,6 +92,23 @@
   margin: 0 auto;
 }
 
+/*
+ * 右綴じ（縦書き）。ページめくりライブラリは左綴じ専用なので、本全体を左右反転して
+ * 右から左へ進む本にし、紙面の中身だけを反転し直して正しい向きで表示する。
+ * （紙の陰影 .book-page__paper は反転させたままにして、ノド側に影が来るようにする）
+ */
+.reader__book--rtl .flipbook {
+  transform: scaleX(-1);
+}
+
+.reader__book--rtl .book-page__inner {
+  transform: scaleX(-1);
+}
+
+.reader--rtl .reader__progress-track {
+  transform: scaleX(-1);
+}
+
 .reader__progress {
   display: flex;
   align-items: center;

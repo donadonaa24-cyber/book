@@ -24,6 +24,15 @@
   perspective: 2400px;
 }
 
+/* 右綴じ：本全体を左右反転し、表紙の絵柄だけ反転し直す */
+.opening--rtl .opening__book {
+  transform: scaleX(-1);
+}
+
+.opening--rtl .opening__cover .book-cover {
+  transform: scaleX(-1);
+}
+
 .opening--spread .opening__book {
   width: calc(var(--pw) * 2);
 }
