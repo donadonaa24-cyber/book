@@ -1,0 +1,144 @@
+:root {
+  --font-serif: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", "BIZ UDPMincho", serif;
+  --font-latin: "Cormorant Garamond", "Shippori Mincho", serif;
+  --font-sans: "Hiragino Sans", "Noto Sans JP", "Yu Gothic", system-ui, sans-serif;
+
+  --room-bg: #17110d;
+  --room-text: #e9dcc6;
+  --room-text-soft: #a8987f;
+
+  --paper: #f5efe1;
+  --paper-shade: #e6dcc6;
+  --ink: #2a251e;
+  --ink-soft: #7a6f5f;
+
+  --digital: #8fc2ff;
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--room-bg);
+  color: var(--room-text);
+  font-family: var(--font-serif);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+#root {
+  min-height: 100%;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+.btn {
+  appearance: none;
+  border: 1px solid rgba(233, 220, 198, 0.35);
+  background: rgba(233, 220, 198, 0.06);
+  color: var(--room-text);
+  padding: 0.7em 1.4em;
+  border-radius: 999px;
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.btn:hover {
+  background: rgba(233, 220, 198, 0.14);
+  border-color: rgba(233, 220, 198, 0.6);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn:focus-visible,
+.reader__nav:focus-visible,
+.shelf-book:focus-visible {
+  outline: 2px solid var(--digital);
+  outline-offset: 3px;
+}
+
+.btn--primary {
+  background: #e9dcc6;
+  border-color: #e9dcc6;
+  color: #1c150f;
+}
+
+.btn--primary:hover {
+  background: #f6ead6;
+  border-color: #f6ead6;
+}
+
+.btn--quiet {
+  border-color: transparent;
+  background: transparent;
+  color: var(--room-text-soft);
+}
+
+.btn--bar {
+  padding: 0.45em 1em;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+}
+
+.btn--paper {
+  border-color: rgba(42, 37, 30, 0.35);
+  background: rgba(42, 37, 30, 0.05);
+  color: var(--ink);
+  font-size: 0.8em;
+}
+
+.btn--paper:hover {
+  background: rgba(42, 37, 30, 0.1);
+  border-color: rgba(42, 37, 30, 0.55);
+}
+
+.btn--ghost {
+  border-color: transparent;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* 画面遷移の共通フェード */
+.fade-in {
+  animation: fade-in 0.45s ease both;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

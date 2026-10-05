@@ -1,0 +1,145 @@
+.cover-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(20px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom));
+}
+
+.cover-stage__backdrop {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 60% at 50% 45%, rgba(40, 30, 22, 0.82), rgba(10, 7, 5, 0.94));
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  animation: fade-in 0.45s ease both;
+}
+
+.cover-stage--leaving .cover-stage__backdrop {
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+
+.cover-stage__content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  max-height: 100%;
+}
+
+.cover-stage__book-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.cover-stage__book-button:focus-visible {
+  outline: 2px solid var(--digital);
+  outline-offset: 6px;
+}
+
+.cover-stage__book {
+  position: relative;
+  width: min(66vw, calc((100dvh - 250px) * 600 / 860), 340px);
+  min-width: 150px;
+  transform-origin: 0 0;
+  filter: drop-shadow(0 26px 34px rgba(0, 0, 0, 0.7));
+  will-change: transform;
+}
+
+/* 本の厚み（小口） */
+.cover-stage__edge {
+  position: absolute;
+  top: 1.2%;
+  bottom: 1.2%;
+  right: -7px;
+  width: 7px;
+  border-radius: 0 3px 3px 0;
+  background: repeating-linear-gradient(180deg, #efe6d2 0 1px, #d9ccb1 1px 2px);
+  box-shadow: inset 2px 0 3px rgba(0, 0, 0, 0.35);
+}
+
+.cover-stage--shown .cover-stage__book {
+  animation: cover-float 5s ease-in-out infinite;
+}
+
+@keyframes cover-float {
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* 開く直前：表紙が少し手前に傾く */
+.cover-stage--opening .cover-stage__book {
+  transition: transform 0.38s ease-in, opacity 0.38s ease-in;
+  transform: perspective(1200px) rotateY(-14deg) scale(1.04);
+  transform-origin: 0 50%;
+}
+
+.cover-stage__info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  animation: fade-in 0.5s ease 0.45s both;
+}
+
+.cover-stage--leaving .cover-stage__info,
+.cover-stage--opening .cover-stage__info {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.cover-stage__desc {
+  margin: 0;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  color: var(--room-text);
+}
+
+.cover-stage__tap {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  color: var(--room-text-soft);
+  animation: tap-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes tap-pulse {
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.cover-stage__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 10px;
+  margin-top: 4px;
+}
+
+.cover-stage__page {
+  margin-left: 0.8em;
+  font-size: 0.75em;
+  opacity: 0.7;
+  letter-spacing: 0.05em;
+}
+
+@media (max-height: 560px) and (orientation: landscape) {
+  .cover-stage__content {
+    flex-direction: row;
+    gap: 28px;
+  }
+
+  .cover-stage__book {
+    width: min(40vw, calc((100dvh - 60px) * 600 / 860), 300px);
+  }
+}

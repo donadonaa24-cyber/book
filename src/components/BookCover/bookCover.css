@@ -1,0 +1,83 @@
+.book-cover {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 600 / 860;
+  overflow: hidden;
+  border-radius: 2px 5px 5px 2px;
+  background:
+    radial-gradient(120% 70% at 50% 60%, color-mix(in srgb, var(--cover-accent) 22%, transparent), transparent 70%),
+    linear-gradient(170deg, color-mix(in srgb, var(--cover-theme) 70%, black), var(--cover-theme) 55%, color-mix(in srgb, var(--cover-theme) 60%, black));
+  color: #fff;
+  container-type: inline-size;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.book-cover__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.book-cover__text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15cqw 8cqw 9cqw;
+  text-align: center;
+  text-shadow: 0 0 2cqw rgba(0, 0, 0, 0.6);
+}
+
+.book-cover__title {
+  font-family: "Cormorant Garamond", "Shippori Mincho", serif;
+  font-weight: 500;
+  font-size: 15cqw;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  color: #f4f8ff;
+}
+
+.book-cover__rule {
+  width: 22cqw;
+  height: 1px;
+  margin: 4.5cqw 0 3.5cqw;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--cover-accent) 80%, white), transparent);
+}
+
+.book-cover__subtitle {
+  font-family: "Shippori Mincho", serif;
+  font-size: 4.4cqw;
+  letter-spacing: 0.3em;
+  color: color-mix(in srgb, var(--cover-accent) 50%, white);
+}
+
+.book-cover__author {
+  margin-top: auto;
+  font-family: "Shippori Mincho", serif;
+  font-size: 4.6cqw;
+  letter-spacing: 0.4em;
+  color: rgba(244, 248, 255, 0.86);
+}
+
+/* 表紙の綴じ側の凹み */
+.book-cover__hinge {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 7%;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.45), rgba(255, 255, 255, 0.08) 45%, rgba(0, 0, 0, 0.15) 60%, transparent);
+  pointer-events: none;
+}
+
+.book-cover__gloss {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0.12), transparent 35%, transparent 70%, rgba(255, 255, 255, 0.05));
+  pointer-events: none;
+}

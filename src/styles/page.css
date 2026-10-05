@@ -1,0 +1,336 @@
+/*
+ * 本のページ（紙面）のスタイル。
+ * lib/paginate.ts のページ割り付け計測でも同じクラスを使うので、
+ * 文字サイズ・行間・余白はここを変えるだけで割り付けも自動で追従する。
+ */
+
+.book-page {
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-serif);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* 紙の質感とノド（綴じ側）の陰影 */
+.book-page__paper {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 50% 40%, rgba(255, 255, 255, 0.35), transparent 60%),
+    radial-gradient(circle at 20% 80%, rgba(170, 140, 90, 0.06), transparent 40%),
+    radial-gradient(circle at 85% 15%, rgba(170, 140, 90, 0.05), transparent 35%);
+}
+
+.stf__item.--left .book-page__paper {
+  background:
+    linear-gradient(270deg, rgba(90, 70, 40, 0.18), rgba(90, 70, 40, 0.05) 4%, transparent 9%),
+    linear-gradient(90deg, rgba(90, 70, 40, 0.06), transparent 2%),
+    radial-gradient(120% 90% at 50% 40%, rgba(255, 255, 255, 0.35), transparent 60%);
+}
+
+.stf__item.--right .book-page__paper {
+  background:
+    linear-gradient(90deg, rgba(90, 70, 40, 0.18), rgba(90, 70, 40, 0.05) 4%, transparent 9%),
+    linear-gradient(270deg, rgba(90, 70, 40, 0.06), transparent 2%),
+    radial-gradient(120% 90% at 50% 40%, rgba(255, 255, 255, 0.35), transparent 60%);
+}
+
+.book-page__inner {
+  /* --page-w / --page-h は PageFrame（と計測用 DOM）がインラインで与える */
+  --fs: clamp(15px, calc(var(--page-w) * 0.046), 19px);
+  --pad-x: clamp(22px, calc(var(--page-w) * 0.1), 58px);
+  --pad-top: clamp(16px, calc(var(--page-h) * 0.04), 40px);
+  --pad-bottom: clamp(10px, calc(var(--page-h) * 0.025), 28px);
+
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  font-size: var(--fs);
+}
+
+.book-page__header {
+  flex: none;
+  height: 2.4em;
+  font-size: 0.62em;
+  line-height: 2.4em;
+  letter-spacing: 0.25em;
+  text-align: center;
+  color: var(--ink-soft);
+  opacity: 0.8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.book-page__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  padding-top: 0.6em;
+}
+
+.book-page__footer {
+  flex: none;
+  height: 2.2em;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.book-page__number {
+  font-family: var(--font-latin);
+  font-size: 0.74em;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+}
+
+/* ── 本文 ─────────────────────────── */
+
+.tp-para {
+  line-height: 1.95;
+  text-indent: 1em;
+  text-align: justify;
+  line-break: strict;
+  overflow-wrap: anywhere;
+  margin: 0 0 0.45em;
+}
+
+.tp-para--cont,
+.tp-para--dialogue {
+  text-indent: 0;
+}
+
+.tp-msg {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0.35em 0 0.8em;
+}
+
+.tp-msg--right {
+  align-items: flex-end;
+}
+
+.tp-msg__from {
+  font-family: var(--font-sans);
+  font-size: 0.62em;
+  color: var(--ink-soft);
+  margin: 0 0 0.25em 0.6em;
+}
+
+.tp-msg__bubble {
+  max-width: 86%;
+  margin: 0;
+  padding: 0.5em 0.95em;
+  border-radius: 1.1em;
+  font-family: var(--font-sans);
+  font-size: 0.82em;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  overflow-wrap: anywhere;
+  background: #fffdf8;
+  border: 1px solid rgba(42, 37, 30, 0.14);
+  border-top-left-radius: 0.3em;
+  box-shadow: 0 1px 0 rgba(42, 37, 30, 0.06);
+}
+
+.tp-msg--right .tp-msg__bubble {
+  background: #cfe0c3;
+  border-color: rgba(60, 90, 50, 0.18);
+  border-top-left-radius: 1.1em;
+  border-top-right-radius: 0.3em;
+}
+
+.tp-break {
+  text-align: center;
+  font-size: 0.8em;
+  color: var(--ink-soft);
+  margin: 0.6em 0 1.4em;
+  letter-spacing: 1em;
+  text-indent: 1em;
+}
+
+/* 将来の縦書きモード（writingMode: "vertical"）用 */
+.book-page--vertical .book-page__body {
+  writing-mode: vertical-rl;
+  padding-top: 0;
+}
+
+.book-page--vertical .tp-para {
+  margin: 0 0 0 0.45em;
+}
+
+/* ── 章扉 ─────────────────────────── */
+
+.title-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-bottom: 8%;
+}
+
+.title-page__novel {
+  font-family: var(--font-latin);
+  font-size: 1.7em;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: #1d2a40;
+}
+
+.title-page__ornament {
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+  margin: 1.4em 0 1.8em;
+  font-size: 0.55em;
+  color: #6f86a8;
+}
+
+.title-page__ornament span {
+  width: 3.5em;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+.title-page__chapter {
+  margin: 0;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7em;
+}
+
+.title-page__number {
+  font-size: 0.85em;
+  letter-spacing: 0.5em;
+  text-indent: 0.5em;
+  color: var(--ink-soft);
+  font-weight: 400;
+}
+
+.title-page__name {
+  font-size: 1.35em;
+  letter-spacing: 0.12em;
+  text-indent: 0.12em;
+  word-break: keep-all;
+}
+
+.title-page__subtitle {
+  margin-top: 1em;
+  font-size: 0.85em;
+  color: var(--ink-soft);
+}
+
+.title-page__author {
+  margin-top: 3.2em;
+  font-size: 0.85em;
+  letter-spacing: 0.2em;
+}
+
+/* ── 挿絵 ─────────────────────────── */
+
+.image-page {
+  margin: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5em 0 0.8em;
+}
+
+.image-page__frame {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-page__img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  box-shadow: 0 1px 3px rgba(42, 37, 30, 0.2);
+}
+
+.image-page__placeholder {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  color: #9c8f7a;
+  background: repeating-linear-gradient(135deg, rgba(156, 143, 122, 0.08) 0 6px, transparent 6px 14px);
+  border-radius: 4px;
+}
+
+.image-page__placeholder svg {
+  width: 32%;
+  max-width: 120px;
+}
+
+.image-page__placeholder-label {
+  font-size: 0.8em;
+  letter-spacing: 0.2em;
+}
+
+.image-page__placeholder-file {
+  font-family: var(--font-sans);
+  font-size: 0.6em;
+  opacity: 0.8;
+}
+
+.image-page__caption {
+  flex: none;
+  margin-top: 1em;
+  font-size: 0.78em;
+  letter-spacing: 0.12em;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+/* ── 終わりのページ ─────────────────── */
+
+.end-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1.2em;
+  padding-bottom: 10%;
+}
+
+.end-page__mark {
+  font-size: 1em;
+  letter-spacing: 0.15em;
+}
+
+.end-page__next {
+  font-size: 0.8em;
+  letter-spacing: 0.6em;
+  text-indent: 0.6em;
+  color: var(--ink-soft);
+}
+
+.end-page__actions {
+  margin-top: 2.4em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+}

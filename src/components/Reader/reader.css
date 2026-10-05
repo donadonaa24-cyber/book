@@ -1,0 +1,162 @@
+.reader {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(ellipse 80% 70% at 50% 45%, #3b2d21 0%, #21180f 55%, #120d09 100%);
+  color: var(--room-text);
+  overflow: hidden;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.reader__bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px;
+  position: relative;
+  z-index: 5;
+}
+
+/* lib/bookLayout.ts の READER_TOP_BAR / READER_BOTTOM_BAR と揃える */
+.reader__bar--top {
+  height: 52px;
+  justify-content: space-between;
+}
+
+.reader__bar--bottom {
+  height: 40px;
+  justify-content: center;
+}
+
+.reader__heading {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9em;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.reader__novel {
+  font-family: var(--font-latin);
+  font-size: 1.15rem;
+  letter-spacing: 0.08em;
+}
+
+.reader__chapter {
+  font-size: 0.78rem;
+  color: var(--room-text-soft);
+  letter-spacing: 0.1em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reader__stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  touch-action: pan-y;
+}
+
+.reader--locked .reader__stage {
+  pointer-events: none;
+}
+
+.reader__book {
+  position: relative;
+  filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.55));
+}
+
+/* 見開き中央のノドの影 */
+.reader__book--spread::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-1px);
+  background: rgba(60, 45, 25, 0.25);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.flipbook {
+  margin: 0 auto;
+}
+
+.reader__progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(360px, 60vw);
+}
+
+.reader__progress-track {
+  flex: 1;
+  height: 2px;
+  background: rgba(233, 220, 198, 0.18);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.reader__progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(143, 194, 255, 0.5), var(--digital));
+  transition: width 0.4s ease;
+}
+
+.reader__page-label {
+  font-family: var(--font-latin);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: var(--room-text-soft);
+  min-width: 5.5em;
+  text-align: right;
+}
+
+.reader__nav {
+  appearance: none;
+  border: none;
+  background: none;
+  width: 40px;
+  height: 36px;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--room-text-soft);
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.reader__nav:hover {
+  color: var(--room-text);
+  background: rgba(233, 220, 198, 0.08);
+}
+
+.reader__nav:disabled {
+  opacity: 0.3;
+}
+
+.reader__loading {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: #120d09;
+  color: var(--room-text-soft);
+  letter-spacing: 0.3em;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 520px) {
+  .reader__chapter {
+    display: none;
+  }
+}
