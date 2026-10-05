@@ -73,11 +73,30 @@ export function Reader({ novel, pages, layout, writingMode, startIndex, interact
     [pages.length],
   );
 
-  const restart = useCallback(() => {
-    setCurrent(0);
-    onPageChange(0);
-    moveWindow(0);
-  }, [onPageChange, moveWindow]);
+  /** 指定ページへ移動する（目次・最初から読む）。窓の外なら窓ごと作り直す */
+  const jumpTo = useCallback(
+    (target: number) => {
+      const index = spread ? target - (target % 2) : target;
+      setCurrent(index);
+      onPageChange(index);
+      if (windowStartFor(index, pages.length) === windowStartRef.current) {
+        bookRef.current?.api()?.turnToPage(index - windowStartRef.current);
+      } else {
+        moveWindow(index);
+      }
+    },
+    [spread, onPageChange, moveWindow, pages.length],
+  );
+
+  const restart = useCallback(() => jumpTo(0), [jumpTo]);
+
+  // 目次（章扉のページ）
+  const [tocOpen, setTocOpen] = useState(false);
+  const chapters = useMemo(
+    () =>
+      pages.flatMap((p, i) => (p.kind === "title" ? [{ index: i, title: p.title, number: p.number }] : [])),
+    [pages],
+  );
 
   const handleFlip = useCallback(
     (localIndex: number) => {
@@ -140,6 +159,10 @@ export function Reader({ novel, pages, layout, writingMode, startIndex, interact
   useEffect(() => {
     if (!interactive) return;
     const onKey = (e: KeyboardEvent) => {
+      if (tocOpen) {
+        if (e.key === "Escape") setTocOpen(false);
+        return;
+      }
       const forwardKey = rtl ? "ArrowLeft" : "ArrowRight";
       const backKey = rtl ? "ArrowRight" : "ArrowLeft";
       if (e.key === forwardKey || e.key === "PageDown" || e.key === " ") {
@@ -154,7 +177,7 @@ export function Reader({ novel, pages, layout, writingMode, startIndex, interact
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [interactive, rtl, next, prev, onExit]);
+  }, [interactive, rtl, next, prev, onExit, tocOpen]);
 
   const isControl = (target: EventTarget | null) =>
     target instanceof Element && !!target.closest("button, a, [data-no-flip]");
@@ -193,6 +216,7 @@ export function Reader({ novel, pages, layout, writingMode, startIndex, interact
   const currentChapter = visible.find((p) => p.chapterTitle)?.chapterTitle ?? "";
   const lastNumber = numbers.length ? numbers[numbers.length - 1] : 1;
   const pageLabel = numbers.length > 1 ? `${numbers[0]}–${numbers[1]}` : `${numbers[0] ?? 1}`;
+  const currentChapterIndex = chapters.reduce((found, c, i) => (c.index <= current + (spread ? 1 : 0) ? i : found), 0);
 
   return (
     <div className={`reader ${rtl ? "reader--rtl" : ""} ${interactive ? "" : "reader--locked"}`}>
@@ -201,10 +225,55 @@ export function Reader({ novel, pages, layout, writingMode, startIndex, interact
           <span className="reader__novel">{novel.title}</span>
           {currentChapter && <span className="reader__chapter">{currentChapter}</span>}
         </div>
-        <button type="button" className="btn btn--bar" onClick={onExit}>
-          <span aria-hidden="true">←</span> 本棚へ戻る
-        </button>
+        <div className="reader__actions">
+          {chapters.length > 1 && (
+            <button
+              type="button"
+              className="btn btn--bar"
+              onClick={() => setTocOpen(true)}
+              disabled={!interactive}
+              aria-haspopup="dialog"
+            >
+              目次
+            </button>
+          )}
+          <button type="button" className="btn btn--bar" onClick={onExit}>
+            <span aria-hidden="true">←</span> 本棚へ戻る
+          </button>
+        </div>
       </header>
+
+      {tocOpen && (
+        <div className="reader-toc" role="dialog" aria-modal="true" aria-label="目次">
+          <div className="reader-toc__backdrop" onClick={() => setTocOpen(false)} />
+          <nav className="reader-toc__panel">
+            <div className="reader-toc__head">
+              <span className="reader-toc__title">目次</span>
+              <button type="button" className="btn btn--bar" onClick={() => setTocOpen(false)}>
+                閉じる
+              </button>
+            </div>
+            <ol className="reader-toc__list">
+              {chapters.map((c, i) => (
+                <li key={c.index}>
+                  <button
+                    type="button"
+                    className={`reader-toc__item ${i === currentChapterIndex ? "reader-toc__item--current" : ""}`}
+                    onClick={() => {
+                      setTocOpen(false);
+                      jumpTo(c.index);
+                    }}
+                    aria-current={i === currentChapterIndex ? "true" : undefined}
+                  >
+                    <span className="reader-toc__name">{c.title}</span>
+                    <span className="reader-toc__page">{c.number}</span>
+                  </button>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        </div>
+      )}
 
       <main
         className="reader__stage"
