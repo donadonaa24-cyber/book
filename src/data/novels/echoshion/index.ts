@@ -1,9 +1,10 @@
 import type { Novel } from "../../../types/novel";
 import { prologue } from "./prologue";
+import { chapter1 } from "./chapter1";
 
 /**
  * 『EchoShion』の作品メタデータ。
- * 話を追加するときは chapter1.ts などを作り、chapters 配列に足してください。
+ * 話を追加するときは chapter2.ts などを作り、chapters 配列に足してください。
  */
 export const echoshion: Novel = {
   id: "echoshion",
@@ -16,5 +17,5 @@ export const echoshion: Novel = {
   accentColor: "#9cc7ff",
   description: "記憶と声をめぐる近未来の物語。",
   writingMode: "vertical",
-  chapters: [prologue],
+  chapters: [prologue, chapter1],
 };

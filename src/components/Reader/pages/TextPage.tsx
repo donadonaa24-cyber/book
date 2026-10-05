@@ -38,7 +38,7 @@ export function TextBlocks({ blocks }: { blocks: LayoutBlock[] }) {
                 <p key={j} className="tp-msg__line">
                   {line.from && <span className="tp-msg__from">{line.from}</span>}
                   <span>
-                    <RichText text={line.text} />
+                    <RichText text={line.text || BLANK_LINE} />
                   </span>
                 </p>
               ))}
