@@ -25,6 +25,19 @@ interface Props {
 }
 
 const SWIPE_MIN = 40;
+/**
+ * ページめくりライブラリに一度に渡すページ数。全ページ（千ページ以上）を渡すと初期化が非常に重いため、
+ * 現在位置の周りだけを「窓」として渡し、端に近づいたら現在位置を中心に作り直す。見開きの組を崩さないよう偶数。
+ */
+const WINDOW = 48;
+/** 窓の端からこのページ数以内に来たら作り直す（次の数回のめくりは必ずアニメーションできるように） */
+const WINDOW_MARGIN = 6;
+
+function windowStartFor(index: number, total: number): number {
+  let start = Math.min(index - WINDOW / 2, total - WINDOW);
+  start = Math.max(0, start);
+  return start - (start % 2);
+}
 
 /**
  * 読書画面。
@@ -36,6 +49,11 @@ export function Reader({ novel, pages, layout, writingMode, startIndex, interact
   const bookRef = useRef<FlipBookHandle>(null);
   // 見開きでは左ページのインデックスで管理する（ライブラリの onFlip と同じ基準）
   const [current, setCurrent] = useState(layout.spread ? startIndex - (startIndex % 2) : startIndex);
+  const [windowStart, setWindowStart] = useState(() => windowStartFor(current, pages.length));
+  const windowStartRef = useRef(windowStart);
+  windowStartRef.current = windowStart;
+  /** 窓を作り直した時に、新しい窓の中で開くページ */
+  const windowEntry = useRef(current);
   const touchStart = useRef<{ x: number; y: number; t: number } | null>(null);
   const suppressClickUntil = useRef(0);
 
@@ -47,26 +65,39 @@ export function Reader({ novel, pages, layout, writingMode, startIndex, interact
   const next = useCallback(() => bookRef.current?.api()?.flipNext("bottom"), []);
   const prev = useCallback(() => bookRef.current?.api()?.flipPrev("bottom"), []);
 
+  const moveWindow = useCallback(
+    (index: number) => {
+      windowEntry.current = index;
+      setWindowStart(windowStartFor(index, pages.length));
+    },
+    [pages.length],
+  );
+
   const restart = useCallback(() => {
-    const api = bookRef.current?.api();
-    if (!api) return;
-    api.turnToPage(0);
     setCurrent(0);
     onPageChange(0);
-  }, [onPageChange]);
+    moveWindow(0);
+  }, [onPageChange, moveWindow]);
 
   const handleFlip = useCallback(
-    (index: number) => {
+    (localIndex: number) => {
+      const start = windowStartRef.current;
+      const index = start + localIndex;
       setCurrent(index);
       onPageChange(index);
+      const end = start + WINDOW;
+      const nearEnd = end < pages.length && end - index <= WINDOW_MARGIN;
+      const nearStart = start > 0 && index - start < WINDOW_MARGIN;
+      // めくり終わった直後に、同じページを表示したまま窓を作り直す
+      if (nearEnd || nearStart) window.setTimeout(() => moveWindow(index), 30);
     },
-    [onPageChange],
+    [onPageChange, moveWindow, pages.length],
   );
 
   // ページ要素は参照を固定しておく（再生成されるとライブラリが全ページを読み直すため）
   const pageElements = useMemo(
     () =>
-      pages.map((p) => {
+      pages.slice(windowStart, windowStart + WINDOW).map((p) => {
         const common = {
           pageWidth,
           pageHeight,
@@ -102,7 +133,7 @@ export function Reader({ novel, pages, layout, writingMode, startIndex, interact
             return <PageFrame key={p.key} {...common} variant="blank" />;
         }
       }),
-    [pages, pageWidth, pageHeight, writingMode, restart, onExit],
+    [pages, windowStart, pageWidth, pageHeight, writingMode, restart, onExit],
   );
 
   // キーボード操作
@@ -186,11 +217,12 @@ export function Reader({ novel, pages, layout, writingMode, startIndex, interact
           className={`reader__book ${spread ? "reader__book--spread" : "reader__book--single"} ${rtl ? "reader__book--rtl" : ""}`}
         >
           <FlipBook
+            key={windowStart}
             ref={bookRef}
             pageWidth={pageWidth}
             pageHeight={pageHeight}
             spread={spread}
-            startPage={startIndex}
+            startPage={Math.max(0, windowEntry.current - windowStart)}
             pages={pageElements}
             onFlip={handleFlip}
           />
