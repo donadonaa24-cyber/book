@@ -1,23 +1,6 @@
-import type { Chapter } from "../../../types/novel";
-import { parseManuscript } from "../../../lib/manuscript";
+プロローグ　みたらしとおはぎ
 
-/**
- * 『EchoShion』プロローグ　みたらしとおはぎ
- *
- * 原稿はテキストのまま貼り付けられます（書式は src/lib/manuscript.ts を参照）。
- * - 1行 = 1段落。行頭の全角スペースはそのまま字下げになる
- * - 空行はそのまま空行になる
- * - «〜» で囲むと LINE のメッセージ枠になる（「名前：」で始まる行は送信者名付き）
- * - 「◇」だけの行で場面転換、「［改ページ］」だけの行で強制改ページ
- * 挿絵を入れたい場合は、pages 配列の好きな位置に
- *   { type: "image", src: "/assets/novels/echoshion/illustrations/xxx.png", caption: "…" }
- * を挟んでください（原稿を ［改ページ］ で区切り、parseManuscript の結果を分けて並べる）。
- */
-
-const TITLE = "プロローグ　みたらしとおはぎ";
-
-const manuscript = `
-　西暦二〇三〇年。
+　西暦二〇三二年。
 
 　街には、人型ロボットが少しずつ増えていた。
 
@@ -390,10 +373,3 @@ const manuscript = `
 　それでも、最後にもう一通だけ送った。
 
 «ほんまに帰ってきて……»
-`;
-
-export const prologue: Chapter = {
-  id: "prologue",
-  title: TITLE,
-  pages: [{ type: "title", title: TITLE }, ...parseManuscript(manuscript)],
-};

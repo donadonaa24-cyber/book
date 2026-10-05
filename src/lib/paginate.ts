@@ -21,7 +21,14 @@ export type LayoutBlock =
       /** 前のページから続いている段落 */
       continued: boolean;
     }
-  | { kind: "message"; message: MessageBlock; paragraphIndex: number }
+  | {
+      kind: "message";
+      /** 長いメッセージはページをまたいで分割されるので、このページに載る行だけを持つ */
+      message: MessageBlock;
+      paragraphIndex: number;
+      /** 行番号 × MSG_LINE_STRIDE + 行内の文字位置（読書位置の保存用） */
+      charOffset: number;
+    }
   | { kind: "break"; paragraphIndex: number };
 
 interface PageBase {
@@ -76,7 +83,7 @@ function buildMessage(m: MessageBlock): HTMLElement {
       p.appendChild(from);
     }
     const text = document.createElement("span");
-    fillText(text, line.text);
+    fillText(text, line.text || BLANK_LINE);
     p.appendChild(text);
     wrap.appendChild(p);
   }
@@ -124,6 +131,8 @@ const NO_LINE_START = "、。，．,.・：；？！?!ー〜」』）)】〉》�
 const NO_LINE_END = "「『（(【〈《";
 /** これより短い断片しか前ページに残らないなら、段落ごと次ページへ送る */
 const MIN_FRAGMENT = 6;
+/** メッセージ枠内の位置を1つの数値で表すための係数（1行がこれより長くなることはない想定） */
+const MSG_LINE_STRIDE = 100_000;
 
 const ALNUM = /[A-Za-z0-9]/;
 
@@ -207,7 +216,7 @@ export function paginateNovel(novel: Novel, opts: PaginateOptions): LayoutPage[]
               chapterIndex: ci,
               pageIndex: pi,
               paragraphIndex: first.paragraphIndex,
-              charOffset: first.kind === "para" ? first.charOffset : 0,
+              charOffset: first.kind === "break" ? 0 : first.charOffset,
             },
             chapterTitle: chapter.title,
             blocks,
@@ -216,20 +225,103 @@ export function paginateNovel(novel: Novel, opts: PaginateOptions): LayoutPage[]
           host.body.replaceChildren();
         };
 
+        /**
+         * メッセージ枠を置く。入りきらなければ行単位で次のページへ送り、
+         * 1行すら入らない場合だけ行の途中で分割する。
+         */
+        const placeMessage = (msg: MessageBlock, idx: number) => {
+          const lines = msg.lines;
+          let li = 0;
+          let co = 0;
+          const push = (part: MessageBlock["lines"], el: HTMLElement) => {
+            host.body.appendChild(el);
+            blocks.push({
+              kind: "message",
+              message: { type: "message", lines: part },
+              paragraphIndex: idx,
+              charOffset: li * MSG_LINE_STRIDE + co,
+            });
+          };
+          for (;;) {
+            if (li < lines.length && co >= lines[li].text.length && co > 0) {
+              li++;
+              co = 0;
+            }
+            // ページ先頭に来た枠内の空行は詰める
+            if (blocks.length === 0 && co === 0) while (li < lines.length && lines[li].text === "") li++;
+            if (li >= lines.length) return;
+
+            const first = lines[li];
+            const rest = [co > 0 ? { text: first.text.slice(co) } : first, ...lines.slice(li + 1)];
+            const whole = buildMessage({ type: "message", lines: rest });
+            host.body.appendChild(whole);
+            if (host.fits()) {
+              whole.remove();
+              push(rest, whole);
+              return;
+            }
+            whole.remove();
+
+            // このページに何行入るか（二分探索）
+            let lo = 0;
+            let hi = rest.length - 1;
+            while (lo < hi) {
+              const mid = Math.ceil((lo + hi) / 2);
+              const el = buildMessage({ type: "message", lines: rest.slice(0, mid) });
+              host.body.appendChild(el);
+              const ok = host.fits();
+              el.remove();
+              if (ok) lo = mid;
+              else hi = mid - 1;
+            }
+            if (lo > 0) {
+              const part = rest.slice(0, lo);
+              push(part, buildMessage({ type: "message", lines: part }));
+              li += lo;
+              co = 0;
+              flush();
+              continue;
+            }
+            if (blocks.length > 0) {
+              flush();
+              continue;
+            }
+
+            // 空のページに1行も入らない長い行は、文字の途中で分割する
+            const line = rest[0];
+            let a = 1;
+            let b = Math.max(1, line.text.length - 1);
+            while (a < b) {
+              const mid = Math.ceil((a + b) / 2);
+              const el = buildMessage({ type: "message", lines: [{ ...line, text: line.text.slice(0, mid) }] });
+              host.body.appendChild(el);
+              const ok = host.fits();
+              el.remove();
+              if (ok) a = mid;
+              else b = mid - 1;
+            }
+            const n = Math.max(1, adjustSplit(line.text, a));
+            const part = [{ ...line, text: line.text.slice(0, n) }];
+            push(part, buildMessage({ type: "message", lines: part }));
+            co += n;
+            flush();
+          }
+        };
+
         src.paragraphs.forEach((para: Paragraph, idx) => {
           if (typeof para !== "string") {
-            const el = para.type === "message" ? buildMessage(para) : buildBreak();
+            if (para.type === "message") {
+              placeMessage(para, idx);
+              return;
+            }
+            const el = buildBreak();
             host.body.appendChild(el);
             if (!host.fits() && blocks.length > 0) {
               el.remove();
               flush();
               host.body.appendChild(el);
             }
-            blocks.push(
-              para.type === "message"
-                ? { kind: "message", message: para, paragraphIndex: idx }
-                : { kind: "break", paragraphIndex: idx },
-            );
+            blocks.push({ kind: "break", paragraphIndex: idx });
             return;
           }
 

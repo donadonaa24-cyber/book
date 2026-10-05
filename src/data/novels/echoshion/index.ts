@@ -1,10 +1,16 @@
 import type { Novel } from "../../../types/novel";
-import { prologue } from "./prologue";
+import { chaptersFromTextFiles } from "../../../lib/manuscript";
 
 /**
  * 『EchoShion』の作品メタデータ。
- * 話を追加するときは chapter1.ts などを作り、chapters 配列に足してください。
+ *
+ * 本文は text/ フォルダのテキストファイル（1ファイル＝1章）。
+ * - ファイル名の順に並ぶ（00.txt = プロローグ, 01.txt = 第一章, …）
+ * - 1行目が章タイトル、2行目以降が本文（書式は src/lib/manuscript.ts）
+ * 話を追加するときは 07.txt のように次の番号でファイルを置くだけでよい。
  */
+const texts = import.meta.glob<string>("./text/*.txt", { query: "?raw", import: "default", eager: true });
+
 export const echoshion: Novel = {
   id: "echoshion",
   title: "EchoShion",
@@ -16,5 +22,5 @@ export const echoshion: Novel = {
   accentColor: "#9cc7ff",
   description: "記憶と声をめぐる近未来の物語。",
   writingMode: "vertical",
-  chapters: [prologue],
+  chapters: chaptersFromTextFiles(texts),
 };

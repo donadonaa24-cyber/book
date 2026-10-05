@@ -1,7 +1,7 @@
 # デジタル本棚
 
 本棚から小説を選び、本を手に取って、ページをめくりながら読む Web アプリ（PWA 対応）。
-第一弾として『EchoShion』プロローグ「みたらしとおはぎ」を収録しています（縦書き・右綴じ）。
+『EchoShion』（プロローグ〜最終章、追加章を含む全24話、縦書き・右綴じ）を収録しています。
 
 - React + TypeScript + Vite
 - ページめくり: [react-pageflip](https://github.com/Nodlik/react-pageflip)（StPageFlip）
@@ -25,6 +25,7 @@ npm run preview    # ビルド結果の確認（PWA の動作確認はこちら�
 | --- | --- | --- |
 | 次のページ | 画面の左半分をタップ／右へスワイプ／← キー | 画面の右半分をタップ／左へスワイプ／→ キー |
 | 前のページ | 画面の右半分をタップ／左へスワイプ／→ キー | 画面の左半分をタップ／右へスワイプ／← キー |
+| 目次 | 右上「目次」から章を選ぶ | 同左 |
 | 本棚へ戻る | 右上「本棚へ戻る」／Esc キー | 同左 |
 
 読書位置は localStorage に自動保存され、次に同じ本を手に取ると「続きから読む」を選べます。
@@ -41,7 +42,7 @@ src/
     index.ts                本棚に並ぶ作品の一覧
     echoshion/
       index.ts              作品メタデータ（タイトル・著者・表紙・テーマ色など）
-      prologue.ts           プロローグの本文（テキスト原稿をそのまま貼り付け）
+      text/00.txt 〜        本文（1ファイル＝1章、1行目が章タイトル）
   types/novel.ts            作品データの型
   lib/
     manuscript.ts           テキスト原稿 → ページデータの変換
@@ -60,7 +61,11 @@ src/
 
 ## 本文を差し替える
 
-`src/data/novels/echoshion/prologue.ts` の `manuscript` に、テキスト原稿をそのまま貼り付けます。
+本文は `src/data/novels/echoshion/text/` のテキストファイルです（1ファイル＝1章）。
+
+- ファイル名の順に並びます（`00.txt` = プロローグ、`01.txt` = 第一章 …）。話を足すときは次の番号のファイルを置くだけです。
+- 間に挟む話は `07a.txt` のように番号の後ろに英字を付けると、`07.txt` と `08.txt` の間に入ります。
+- **1行目が章タイトル**（扉ページに表示）、2行目以降が本文です。
 
 ```
 　地の文は行頭の全角スペースもそのまま表示されます。
@@ -81,7 +86,7 @@ src/
 ## 挿絵を追加する
 
 `public/assets/novels/echoshion/illustrations/` に画像を置くだけで反映されます。
-`prologue.ts` の `pages` 配列に `{ type: "image", src: "/assets/novels/echoshion/illustrations/xxx.png", caption: "…" }` を挟むと挿絵ページになります（現在は挿絵なし）。
+章の `pages` 配列に `{ type: "image", src: "/assets/novels/echoshion/illustrations/xxx.png", caption: "…" }` を挟むと挿絵ページになります（現在は挿絵なし）。
 ファイルが無い間は「挿絵（準備中）」のプレースホルダーが表示されます。
 
 ## 表紙を差し替える

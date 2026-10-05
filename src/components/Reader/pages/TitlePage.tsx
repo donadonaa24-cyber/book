@@ -1,3 +1,5 @@
+import { RichText } from "./TextPage";
+
 interface Props {
   novelTitle: string;
   title: string;
@@ -18,8 +20,12 @@ export function TitleContent({ novelTitle, title, subtitle, author }: Props) {
       <h1 className="title-page__chapter">
         {name ? (
           <>
-            <span className="title-page__number">{head}</span>
-            <span className="title-page__name">{name}</span>
+            <span className="title-page__number">
+              <RichText text={head} />
+            </span>
+            <span className="title-page__name">
+              <RichText text={name} />
+            </span>
           </>
         ) : (
           <span className="title-page__name">{title}</span>
