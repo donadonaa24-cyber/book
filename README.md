@@ -1,7 +1,7 @@
 # デジタル本棚
 
 本棚から小説を選び、本を手に取って、ページをめくりながら読む Web アプリ（PWA 対応）。
-第一弾として『EchoShion』プロローグ「みたらしとおはぎ」を収録しています（縦書き・右綴じ）。
+『EchoShion』（プロローグ〜第六章、縦書き・右綴じ）を収録しています。
 
 - React + TypeScript + Vite
 - ページめくり: [react-pageflip](https://github.com/Nodlik/react-pageflip)（StPageFlip）
@@ -41,7 +41,7 @@ src/
     index.ts                本棚に並ぶ作品の一覧
     echoshion/
       index.ts              作品メタデータ（タイトル・著者・表紙・テーマ色など）
-      prologue.ts           プロローグの本文（テキスト原稿をそのまま貼り付け）
+      text/00.txt 〜        本文（1ファイル＝1章、1行目が章タイトル）
   types/novel.ts            作品データの型
   lib/
     manuscript.ts           テキスト原稿 → ページデータの変換
@@ -60,7 +60,10 @@ src/
 
 ## 本文を差し替える
 
-`src/data/novels/echoshion/prologue.ts` の `manuscript` に、テキスト原稿をそのまま貼り付けます。
+本文は `src/data/novels/echoshion/text/` のテキストファイルです（1ファイル＝1章）。
+
+- ファイル名の順に並びます（`00.txt` = プロローグ、`01.txt` = 第一章 …）。話を足すときは次の番号のファイルを置くだけです。
+- **1行目が章タイトル**（扉ページに表示）、2行目以降が本文です。
 
 ```
 　地の文は行頭の全角スペースもそのまま表示されます。
@@ -81,7 +84,7 @@ src/
 ## 挿絵を追加する
 
 `public/assets/novels/echoshion/illustrations/` に画像を置くだけで反映されます。
-`prologue.ts` の `pages` 配列に `{ type: "image", src: "/assets/novels/echoshion/illustrations/xxx.png", caption: "…" }` を挟むと挿絵ページになります（現在は挿絵なし）。
+章の `pages` 配列に `{ type: "image", src: "/assets/novels/echoshion/illustrations/xxx.png", caption: "…" }` を挟むと挿絵ページになります（現在は挿絵なし）。
 ファイルが無い間は「挿絵（準備中）」のプレースホルダーが表示されます。
 
 ## 表紙を差し替える

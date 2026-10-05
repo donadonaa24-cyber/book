@@ -1,14 +1,5 @@
-import type { Chapter } from "../../../types/novel";
-import { parseManuscript } from "../../../lib/manuscript";
+第一章　起動しない声
 
-/**
- * 『EchoShion』第一章　起動しない声
- * 原稿の書式は prologue.ts / src/lib/manuscript.ts を参照。
- */
-
-const TITLE = "第一章　起動しない声";
-
-const manuscript = `
 　志遠がいなくなってから、部屋の時間は止まった。
 
 　時計は動いていた。
@@ -458,10 +449,3 @@ ECHOの俺が、どこまで俺なんかは分からん。
 　澪は画面を閉じた。
 
 　それから、白い箱に手を伸ばした。
-`;
-
-export const chapter1: Chapter = {
-  id: "chapter-1",
-  title: TITLE,
-  pages: [{ type: "title", title: TITLE }, ...parseManuscript(manuscript)],
-};

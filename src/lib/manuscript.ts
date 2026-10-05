@@ -1,4 +1,4 @@
-import type { MessageLine, Paragraph, TextPageData } from "../types/novel";
+import type { Chapter, MessageLine, Paragraph, TextPageData } from "../types/novel";
 
 /**
  * テキスト原稿をページデータに変換する。原稿をそのまま貼り付けられるようにするためのもの。
@@ -68,4 +68,26 @@ function parseMessageLine(text: string): MessageLine {
   if (text === "") return { text: "" };
   const m = /^([^\s：:]{1,8})[：:](.+)$/.exec(text);
   return m ? { from: m[1], text: m[2] } : { text };
+}
+
+/**
+ * テキストファイル（1ファイル＝1章）から章の一覧を作る。
+ * - ファイル名の順に並ぶ（00.txt, 01.txt, …）
+ * - 1行目が章タイトル（扉に表示）、2行目以降が本文（書式は parseManuscript と同じ）
+ */
+export function chaptersFromTextFiles(files: Record<string, string>): Chapter[] {
+  return Object.keys(files)
+    .sort()
+    .map((path) => {
+      const raw = files[path].replace(/\r\n?/g, "\n").replace(/^\uFEFF/, "");
+      const nl = raw.indexOf("\n");
+      const title = (nl < 0 ? raw : raw.slice(0, nl)).trim();
+      const body = nl < 0 ? "" : raw.slice(nl + 1);
+      const name = (path.split("/").pop() ?? path).replace(/\.txt$/, "");
+      return {
+        id: `ch-${name}`,
+        title,
+        pages: [{ type: "title" as const, title }, ...parseManuscript(body)],
+      };
+    });
 }
