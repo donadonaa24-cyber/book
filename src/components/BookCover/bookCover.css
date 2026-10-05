@@ -75,6 +75,16 @@
   pointer-events: none;
 }
 
+.book-cover--bind-right {
+  border-radius: 5px 2px 2px 5px;
+}
+
+.book-cover--bind-right .book-cover__hinge {
+  left: auto;
+  right: 0;
+  transform: scaleX(-1);
+}
+
 .book-cover__gloss {
   position: absolute;
   inset: 0;

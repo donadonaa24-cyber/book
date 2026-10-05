@@ -9,6 +9,8 @@ import "./opening.css";
 interface Props {
   novel: Novel;
   layout: BookLayout;
+  /** 右綴じ（縦書き）の本。表紙が右へ開き、ページも右へめくれる */
+  rtl?: boolean;
   /** 下の読書画面の準備ができるまでは最後のフェードアウトを待つ */
   readerReady: boolean;
   onDone: () => void;
@@ -29,7 +31,7 @@ const TOTAL = LEAF_START + (LEAVES - 1) * LEAF_STAGGER + LEAF_DURATION + 200;
  * 表紙が開き、数ページがぺらぺらと自動でめくれたあと、読書画面へフェードする。
  * CSS アニメーションのみで実装（タップでスキップ可能）。
  */
-export function OpeningAnimation({ novel, layout, readerReady, onDone }: Props) {
+export function OpeningAnimation({ novel, layout, rtl = false, readerReady, onDone }: Props) {
   const [animDone, setAnimDone] = useState(() => prefersReducedMotion());
   const [leaving, setLeaving] = useState(false);
   const doneRef = useRef(onDone);
@@ -60,7 +62,7 @@ export function OpeningAnimation({ novel, layout, readerReady, onDone }: Props) 
 
   return (
     <div
-      className={`opening ${spread ? "opening--spread" : "opening--single"} ${leaving ? "opening--leaving" : ""}`}
+      className={`opening ${spread ? "opening--spread" : "opening--single"} ${rtl ? "opening--rtl" : ""} ${leaving ? "opening--leaving" : ""}`}
       style={style}
       onClick={() => setAnimDone(true)}
       role="presentation"
@@ -89,7 +91,7 @@ export function OpeningAnimation({ novel, layout, readerReady, onDone }: Props) 
           ))}
           <div className="opening__cover" style={{ "--z0": `${LEAVES + 2}px`, "--z1": "-1px" } as CSSProperties}>
             <div className="opening__face opening__face--front">
-              <BookCover novel={novel} />
+              <BookCover novel={novel} binding={rtl ? "right" : "left"} />
             </div>
             <div
               className="opening__face opening__face--back opening__endpaper"

@@ -11,7 +11,7 @@ function collectText(novel: Novel): string {
   add(novel.title);
   add(novel.subtitle);
   add(novel.author);
-  add("0123456789／了つづく本棚へ戻る");
+  add("0123456789／了つづく本棚へ戻る最初から読む◇　");
   for (const ch of novel.chapters) {
     add(ch.title);
     for (const p of ch.pages) {
@@ -19,8 +19,10 @@ function collectText(novel: Novel): string {
         for (const para of p.paragraphs) {
           if (typeof para === "string") add(para);
           else if (para.type === "message") {
-            add(para.text);
-            add(para.from);
+            for (const line of para.lines) {
+              add(line.text);
+              add(line.from);
+            }
           }
         }
       } else if (p.type === "title") {

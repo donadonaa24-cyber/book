@@ -1,6 +1,7 @@
 import type { MessageBlock, Novel, Paragraph, WritingMode } from "../types/novel";
 import type { ReadingAnchor } from "./progress";
 import { compareAnchor } from "./progress";
+import { fillText } from "./typeset";
 
 /**
  * 作品データ（章 → ページ → 段落）を、実際の画面サイズに合わせた「表示ページ」に割り付ける。
@@ -8,7 +9,7 @@ import { compareAnchor } from "./progress";
  * - データ上の text ページは必ず改ページして始まる
  * - 1ページに収まらない段落は、実際の DOM で文字数を測って途中で分割する（簡易禁則処理あり）
  * - 計測は画面に表示されるページと同じクラス・同じ CSS で行うので、フォントサイズや余白を
- *   CSS 側で変えても自動で追従する。縦書き（writing-mode: vertical-rl）でも同じ仕組みで計測できる
+ *   CSS 側で変えても自動で追従する。縦書き（writing-mode: vertical-rl）では横方向のあふれで判定する
  */
 
 export type LayoutBlock =
@@ -17,9 +18,8 @@ export type LayoutBlock =
       text: string;
       paragraphIndex: number;
       charOffset: number;
-      /** 前のページから続いている段落（字下げしない） */
+      /** 前のページから続いている段落 */
       continued: boolean;
-      dialogue: boolean;
     }
   | { kind: "message"; message: MessageBlock; paragraphIndex: number }
   | { kind: "break"; paragraphIndex: number };
@@ -42,45 +42,44 @@ export type LayoutPage =
 export interface PaginateOptions {
   pageWidth: number;
   pageHeight: number;
-  /** 見開き表示。タイトルページが右側に来るよう先頭に白紙を入れ、総ページ数を偶数に揃える */
+  /** 見開き表示。章扉が奇数ページ側（横書きは右・縦書きは左）に来るよう白紙を入れ、総ページ数を偶数に揃える */
   spread: boolean;
   writingMode: WritingMode;
 }
 
 // ── 計測用 DOM（TextPage コンポーネントと同じ構造・クラス名） ─────────────
 
-const DIALOGUE_START = /^[「『（(〈《【]/;
+/** 空行は全角スペース1文字の段落として組む（1行分の高さ・幅を確保するため） */
+export const BLANK_LINE = "\u3000";
 
-export function isDialogue(text: string): boolean {
-  return DIALOGUE_START.test(text);
+export function paraClassName(text: string): string {
+  return text === "" ? "tp-para tp-para--blank" : "tp-para";
 }
 
-export function paraClassName(continued: boolean, dialogue: boolean): string {
-  return ["tp-para", continued && "tp-para--cont", dialogue && !continued && "tp-para--dialogue"]
-    .filter(Boolean)
-    .join(" ");
-}
-
-function buildPara(text: string, continued: boolean, dialogue: boolean): HTMLElement {
+function buildPara(text: string): HTMLElement {
   const p = document.createElement("p");
-  p.className = paraClassName(continued, dialogue);
-  p.textContent = text;
+  p.className = paraClassName(text);
+  fillText(p, text || BLANK_LINE);
   return p;
 }
 
 function buildMessage(m: MessageBlock): HTMLElement {
   const wrap = document.createElement("div");
-  wrap.className = `tp-msg tp-msg--${m.side}`;
-  if (m.side === "left") {
-    const from = document.createElement("span");
-    from.className = "tp-msg__from";
-    from.textContent = m.from;
-    wrap.appendChild(from);
+  wrap.className = "tp-msg";
+  for (const line of m.lines) {
+    const p = document.createElement("p");
+    p.className = "tp-msg__line";
+    if (line.from) {
+      const from = document.createElement("span");
+      from.className = "tp-msg__from";
+      from.textContent = line.from;
+      p.appendChild(from);
+    }
+    const text = document.createElement("span");
+    fillText(text, line.text);
+    p.appendChild(text);
+    wrap.appendChild(p);
   }
-  const bubble = document.createElement("p");
-  bubble.className = "tp-msg__bubble";
-  bubble.textContent = m.text;
-  wrap.appendChild(bubble);
   return wrap;
 }
 
@@ -126,9 +125,13 @@ const NO_LINE_END = "「『（(【〈《";
 /** これより短い断片しか前ページに残らないなら、段落ごと次ページへ送る */
 const MIN_FRAGMENT = 6;
 
+const ALNUM = /[A-Za-z0-9]/;
+
 function adjustSplit(text: string, n: number): number {
   while (n > 1 && NO_LINE_START.includes(text[n] ?? "")) n--;
   while (n > 1 && NO_LINE_END.includes(text[n - 1] ?? "")) n--;
+  // 英単語（縦中横を含む）の途中では切らない
+  while (n > 1 && ALNUM.test(text[n - 1]) && ALNUM.test(text[n] ?? "")) n--;
   return n;
 }
 
@@ -158,7 +161,7 @@ export function paginateNovel(novel: Novel, opts: PaginateOptions): LayoutPage[]
         const baseAnchor: ReadingAnchor = { chapterIndex: ci, pageIndex: pi, paragraphIndex: 0, charOffset: 0 };
 
         if (src.type === "title") {
-          // 見開きでは章扉を右ページ（奇数インデックス）に置く
+          // 見開きでは章扉を奇数インデックス（横書きは右ページ・縦書きは左ページ）に置く
           if (opts.spread && pages.length % 2 === 0) pages.push(blank(baseAnchor, chapter.title));
           pages.push({
             kind: "title",
@@ -230,16 +233,24 @@ export function paginateNovel(novel: Novel, opts: PaginateOptions): LayoutPage[]
             return;
           }
 
-          const dialogue = isDialogue(para);
+          // ページ先頭の空行は詰める
+          if (para === "" && blocks.length === 0) return;
+
           let offset = 0;
           // 段落が収まるまで、収まる分だけ切り出してページを送る
           for (;;) {
             const rest = para.slice(offset);
             const continued = offset > 0;
-            const el = buildPara(rest, continued, dialogue);
+            const el = buildPara(rest);
             host.body.appendChild(el);
             if (host.fits()) {
-              blocks.push({ kind: "para", text: rest, paragraphIndex: idx, charOffset: offset, continued, dialogue });
+              blocks.push({ kind: "para", text: rest, paragraphIndex: idx, charOffset: offset, continued });
+              return;
+            }
+            if (para === "") {
+              // 空行が入りきらない＝ページ末尾。空行は捨てて改ページする
+              el.remove();
+              flush();
               return;
             }
 
@@ -248,7 +259,7 @@ export function paginateNovel(novel: Novel, opts: PaginateOptions): LayoutPage[]
             let hi = rest.length;
             while (lo < hi) {
               const mid = Math.ceil((lo + hi) / 2);
-              el.textContent = rest.slice(0, mid);
+              fillText(el, rest.slice(0, mid));
               if (host.fits()) lo = mid;
               else hi = mid - 1;
             }
@@ -260,8 +271,8 @@ export function paginateNovel(novel: Novel, opts: PaginateOptions): LayoutPage[]
 
             if (n > 0) {
               const text = rest.slice(0, n);
-              host.body.appendChild(buildPara(text, continued, dialogue));
-              blocks.push({ kind: "para", text, paragraphIndex: idx, charOffset: offset, continued, dialogue });
+              host.body.appendChild(buildPara(text));
+              blocks.push({ kind: "para", text, paragraphIndex: idx, charOffset: offset, continued });
               offset += n;
             }
             flush();
