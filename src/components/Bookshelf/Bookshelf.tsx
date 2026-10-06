@@ -117,7 +117,6 @@ function ShelfBook({
       </button>
       <div className="shelf-slot__plaque">
         <span className="shelf-slot__plaque-title">{novel.title}</span>
-        <span className="shelf-slot__plaque-sub">{novel.author}</span>
       </div>
     </div>
   );
