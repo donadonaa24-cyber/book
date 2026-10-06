@@ -5,6 +5,7 @@ import { chaptersFromTextFiles } from "../../../lib/manuscript";
  * 『星の終わりに君は生きる』の作品メタデータ。
  *
  * 本文は text/ フォルダのテキストファイル（1ファイル＝1話）。ファイル名の順に並ぶ。
+ * 作者の原稿をもとに改稿した版で、作者の元原稿は original/ に残している（読み込まない）。続編は ../hoshi2（特別編）。
  * - 01.txt〜08.txt = 第一話〜第八話、09.txt = 最終話、10.txt = あとがき「宇宙と意識フィールド」
  * - 挿絵は「［挿絵：パス］」の行で入れる（画像は public/assets/novels/hoshi/illustrations/）
  * - 1行目が話タイトル、2行目以降が本文（書式は src/lib/manuscript.ts）
