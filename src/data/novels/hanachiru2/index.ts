@@ -7,7 +7,7 @@ import { chaptersFromTextFiles } from "../../../lib/manuscript";
  * 本文は text/ フォルダのテキストファイル（1ファイル＝1話）。ファイル名の順に並ぶ。
  * 作者の原稿をもとに改稿した版で、作者の元原稿は original/ に残している（読み込まない）。
  * - 00.txt = 第一部あらすじ、24.txt〜41.txt = 第二十四話〜第四十一話、42.txt = 最終話
- * - 43.txt〜44.txt = 番外編、45.txt = あとがき
+ * - 43.txt〜44.txt = 番外編、45.txt = あとがき、46.txt = 別巻（アナザールート）への案内
  * - 1行目が話タイトル、2行目以降が本文（書式は src/lib/manuscript.ts）
  */
 const texts = import.meta.glob<string>("./text/*.txt", { query: "?raw", import: "default", eager: true });
