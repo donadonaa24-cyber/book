@@ -22,11 +22,23 @@ export interface SceneBreak {
 }
 
 /**
+ * BGM の雰囲気。原稿の「［BGM：切ない］」の行で切り替える（音は src/lib/bgm/ で自動生成）。
+ * 無音 = BGM を止める。
+ */
+export type BgmMood = "静寂" | "日常" | "切ない" | "緊張" | "高揚" | "余韻" | "幻想" | "無音";
+
+/** BGM の切り替え位置（表示はされない） */
+export interface BgmCue {
+  type: "bgm";
+  mood: BgmMood;
+}
+
+/**
  * 本文の1行（段落）。
  * 文字列は書いたとおりに表示する（字下げは原稿の全角スペースをそのまま使う）。
  * 空文字 "" は空行になる。特殊な表示が必要なときだけオブジェクトを使う。
  */
-export type Paragraph = string | MessageBlock | SceneBreak;
+export type Paragraph = string | MessageBlock | SceneBreak | BgmCue;
 
 /** 章扉（タイトルページ） */
 export interface TitlePageData {
@@ -59,6 +71,8 @@ export type PageData = TitlePageData | TextPageData | ImagePageData;
 export interface Chapter {
   id: string;
   title: string;
+  /** 章の頭（章扉）から流す BGM。本文の最初の行が「［BGM：〜］」ならそれが入る */
+  bgm?: BgmMood;
   pages: PageData[];
 }
 

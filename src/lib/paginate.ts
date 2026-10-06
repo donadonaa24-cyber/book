@@ -1,4 +1,4 @@
-import type { MessageBlock, Novel, Paragraph, WritingMode } from "../types/novel";
+import type { BgmMood, MessageBlock, Novel, Paragraph, WritingMode } from "../types/novel";
 import type { ReadingAnchor } from "./progress";
 import { compareAnchor } from "./progress";
 import { fillText } from "./typeset";
@@ -33,6 +33,8 @@ export type LayoutBlock =
 
 interface PageBase {
   key: string;
+  /** このページから切り替える BGM（原稿の「［BGM：〜］」・章の bgm） */
+  bgm?: BgmMood;
   /** 表示上のページ番号（空白ページは null） */
   number: number | null;
   anchor: ReadingAnchor;
@@ -151,6 +153,13 @@ export function paginateNovel(novel: Novel, opts: PaginateOptions): LayoutPage[]
   const pages: LayoutPage[] = [];
   let number = 0;
   let blankCount = 0;
+  /** 次に置くページに付ける BGM 指定 */
+  let cue: BgmMood | undefined;
+  const takeCue = () => {
+    const c = cue;
+    cue = undefined;
+    return c ? { bgm: c } : {};
+  };
 
   const blank = (anchor: ReadingAnchor, chapterTitle: string): LayoutPage => ({
     kind: "blank",
@@ -170,6 +179,7 @@ export function paginateNovel(novel: Novel, opts: PaginateOptions): LayoutPage[]
         const baseAnchor: ReadingAnchor = { chapterIndex: ci, pageIndex: pi, paragraphIndex: 0, charOffset: 0 };
 
         if (src.type === "title") {
+          if (chapter.bgm) cue = chapter.bgm;
           // 見開きでは章扉を奇数インデックス（横書きは右ページ・縦書きは左ページ）に置く
           if (opts.spread && pages.length % 2 === 0) pages.push(blank(baseAnchor, chapter.title));
           pages.push({
@@ -178,6 +188,7 @@ export function paginateNovel(novel: Novel, opts: PaginateOptions): LayoutPage[]
             number: ++number,
             anchor: baseAnchor,
             chapterTitle: chapter.title,
+            ...takeCue(),
             novelTitle: novel.title,
             title: src.title,
             subtitle: src.subtitle,
@@ -193,6 +204,7 @@ export function paginateNovel(novel: Novel, opts: PaginateOptions): LayoutPage[]
             number: ++number,
             anchor: baseAnchor,
             chapterTitle: chapter.title,
+            ...takeCue(),
             src: src.src,
             caption: src.caption,
             alt: src.alt,
@@ -219,6 +231,7 @@ export function paginateNovel(novel: Novel, opts: PaginateOptions): LayoutPage[]
               charOffset: first.kind === "break" ? 0 : first.charOffset,
             },
             chapterTitle: chapter.title,
+            ...takeCue(),
             blocks,
           });
           blocks = [];
@@ -310,6 +323,10 @@ export function paginateNovel(novel: Novel, opts: PaginateOptions): LayoutPage[]
 
         src.paragraphs.forEach((para: Paragraph, idx) => {
           if (typeof para !== "string") {
+            if (para.type === "bgm") {
+              cue = para.mood;
+              return;
+            }
             if (para.type === "message") {
               placeMessage(para, idx);
               return;
@@ -387,6 +404,7 @@ export function paginateNovel(novel: Novel, opts: PaginateOptions): LayoutPage[]
         charOffset: 0,
       },
       chapterTitle: lastChapter?.title ?? "",
+      ...takeCue(),
       novelTitle: novel.title,
     });
 
