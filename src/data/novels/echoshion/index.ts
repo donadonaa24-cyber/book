@@ -4,10 +4,10 @@ import { chaptersFromTextFiles } from "../../../lib/manuscript";
 /**
  * 『EchoShion』の作品メタデータ。
  *
- * 本文は text/ フォルダのテキストファイル（1ファイル＝1章）。
- * - ファイル名の順に並ぶ（00.txt = プロローグ, 01.txt = 第一章, …）
+ * 本文は text/ フォルダのテキストファイル（1ファイル＝1章）。改稿版を収録している。
+ * - ファイル名の順に並ぶ（00.txt = プロローグ, 01.txt = 第一章, …, 24.txt = エピローグ）
  * - 1行目が章タイトル、2行目以降が本文（書式は src/lib/manuscript.ts）
- * 話を追加するときは 07.txt のように次の番号でファイルを置くだけでよい。
+ * 作者による原稿は original/ に残している（本棚には読み込まない）。
  */
 const texts = import.meta.glob<string>("./text/*.txt", { query: "?raw", import: "default", eager: true });
 
