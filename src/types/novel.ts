@@ -73,6 +73,8 @@ export interface Novel {
   coverHasTitle?: boolean;
   /** 表紙のタイトル文字を縦書きにする（長い和文タイトル向け。「、」の後で改行する） */
   coverTitleVertical?: boolean;
+  /** 縦書きタイトルの列の分け方を指定する（「、」を含まない題名向け。例: ["星の終わりに", "君は生きる"]） */
+  coverTitleLines?: string[];
   /** 上巻・下巻など。本棚の名札と表紙に小さく表示する */
   volume?: string;
   themeColor: string;
