@@ -10,7 +10,7 @@ import type { Chapter, MessageLine, Paragraph, TextPageData } from "../types/nov
  *     «澪：明日ゴミの日やで
  *     志遠：知ってる»
  *   のように「名前：」で始まる行は送信者名付きで表示する
- * - 「◇」だけの行は場面転換の記号になる
+ * - 「◇」や「＊＊＊」だけの行は場面転換の記号になる
  * - 「［改ページ］」だけの行で強制的に改ページする
  */
 export function parseManuscript(raw: string): TextPageData[] {
@@ -35,7 +35,7 @@ export function parseManuscript(raw: string): TextPageData[] {
       pushBlank();
     } else if (bare === "［改ページ］" || bare === "[改ページ]") {
       flush();
-    } else if (bare === "◇") {
+    } else if (bare === "◇" || /^[＊*※]{3}$/.test(bare.replace(/\s/g, ""))) {
       paragraphs.push({ type: "break" });
     } else if (bare.startsWith("«")) {
       // メッセージブロック：» が出てくるまでを1つの枠にまとめる

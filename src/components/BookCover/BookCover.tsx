@@ -29,7 +29,7 @@ export function BookCover({ novel, className, detailed = false, binding }: Props
 
   return (
     <div
-      className={`book-cover book-cover--bind-${side} ${failed ? "book-cover--fallback" : ""} ${className ?? ""}`}
+      className={`book-cover book-cover--bind-${side} ${novel.coverTitleVertical ? "book-cover--vtitle" : ""} ${failed ? "book-cover--fallback" : ""} ${className ?? ""}`}
       style={style}
     >
       {!failed && (
@@ -43,7 +43,11 @@ export function BookCover({ novel, className, detailed = false, binding }: Props
       )}
       {showText && (
         <div className="book-cover__text">
-          <div className="book-cover__title">{novel.title}</div>
+          <div className="book-cover__title">
+            {novel.coverTitleVertical
+              ? novel.title.split(/(?<=、)/).map((line, i) => <span key={i}>{line}</span>)
+              : novel.title}
+          </div>
           <div className="book-cover__rule" />
           {detailed && <div className="book-cover__subtitle">{novel.subtitle}</div>}
           <div className="book-cover__author">{novel.author}</div>

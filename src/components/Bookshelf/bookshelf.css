@@ -191,6 +191,7 @@
   display: flex;
   align-items: baseline;
   gap: 6px;
+  max-width: calc(100% + 12px);
   padding: 1px 9px;
   border-radius: 2px;
   white-space: nowrap;
@@ -212,15 +213,13 @@
 }
 
 .shelf-slot__plaque-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-family: var(--font-latin);
   font-weight: 600;
   font-size: 11px;
   letter-spacing: 0.08em;
-}
-
-.shelf-slot__plaque-sub {
-  letter-spacing: 0.1em;
-  opacity: 0.75;
 }
 
 /* ── 飾りの背表紙・小物 ─────────────── */

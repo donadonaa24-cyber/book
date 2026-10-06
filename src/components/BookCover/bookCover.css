@@ -42,6 +42,25 @@
   color: #f4f8ff;
 }
 
+/* 長い和文タイトルは縦書きで「、」ごとに列を分ける */
+.book-cover--vtitle .book-cover__title {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 3.5cqw;
+  writing-mode: horizontal-tb;
+  font-family: "Shippori Mincho", serif;
+  font-size: 10cqw;
+  letter-spacing: 0.14em;
+}
+
+.book-cover--vtitle .book-cover__title > span {
+  writing-mode: vertical-rl;
+}
+
+.book-cover--vtitle .book-cover__title > span:nth-child(2) {
+  padding-top: 10cqw;
+}
+
 .book-cover__rule {
   width: 22cqw;
   height: 1px;

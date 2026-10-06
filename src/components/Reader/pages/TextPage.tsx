@@ -7,8 +7,8 @@ export function RichText({ text }: { text: string }) {
   return (
     <>
       {segmentText(text).map((seg, i) =>
-        seg.tcy ? (
-          <span key={i} className="tcy">
+        seg.cls ? (
+          <span key={i} className={seg.cls}>
             {seg.text}
           </span>
         ) : (

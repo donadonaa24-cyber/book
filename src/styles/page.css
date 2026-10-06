@@ -158,6 +158,11 @@
   text-combine-upright: all;
 }
 
+/* 3〜4桁の数字（「2011」など）は1文字ずつ正立させる */
+.book-page--vertical .upright {
+  text-orientation: upright;
+}
+
 .book-page--vertical .end-page__actions,
 .book-page--vertical .image-page {
   writing-mode: horizontal-tb;

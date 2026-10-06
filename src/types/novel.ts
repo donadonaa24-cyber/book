@@ -71,6 +71,8 @@ export interface Novel {
   coverImage: string;
   /** 表紙画像にタイトル文字が描き込まれている場合は true（文字の重ね表示をしない） */
   coverHasTitle?: boolean;
+  /** 表紙のタイトル文字を縦書きにする（長い和文タイトル向け。「、」の後で改行する） */
+  coverTitleVertical?: boolean;
   themeColor: string;
   /** 表紙・背表紙のアクセント色（省略時は白系） */
   accentColor?: string;
