@@ -1,4 +1,4 @@
-import type { Chapter, MessageLine, Paragraph, TextPageData } from "../types/novel";
+import type { Chapter, ImagePageData, MessageLine, Paragraph, TextPageData } from "../types/novel";
 
 /**
  * テキスト原稿をページデータに変換する。原稿をそのまま貼り付けられるようにするためのもの。
@@ -12,10 +12,12 @@ import type { Chapter, MessageLine, Paragraph, TextPageData } from "../types/nov
  *   のように「名前：」で始まる行は送信者名付きで表示する
  * - 「◇」や「＊＊＊」だけの行は場面転換の記号になる
  * - 「［改ページ］」だけの行で強制的に改ページする
+ * - 「［挿絵：/assets/novels/〜.webp］」だけの行で、その位置に挿絵のページを入れる
+ *   「［挿絵：パス｜キャプション］」のように「｜」の後にキャプションも書ける
  */
-export function parseManuscript(raw: string): TextPageData[] {
+export function parseManuscript(raw: string): (TextPageData | ImagePageData)[] {
   const lines = raw.replace(/\r\n?/g, "\n").split("\n");
-  const pages: TextPageData[] = [];
+  const pages: (TextPageData | ImagePageData)[] = [];
   let paragraphs: Paragraph[] = [];
 
   const pushBlank = () => {
@@ -35,6 +37,10 @@ export function parseManuscript(raw: string): TextPageData[] {
       pushBlank();
     } else if (bare === "［改ページ］" || bare === "[改ページ]") {
       flush();
+    } else if (/^[［\[]挿絵[：:].+[］\]]$/.test(bare)) {
+      const [src, caption] = bare.slice(4, -1).split(/[｜|]/).map((s) => s.trim());
+      flush();
+      pages.push({ type: "image", src, ...(caption ? { caption } : {}) });
     } else if (bare === "◇" || /^[＊*※]{3}$/.test(bare.replace(/\s/g, ""))) {
       paragraphs.push({ type: "break" });
     } else if (bare.startsWith("«")) {

@@ -45,7 +45,7 @@ export function BookCover({ novel, className, detailed = false, binding }: Props
         <div className="book-cover__text">
           <div className="book-cover__title">
             {novel.coverTitleVertical
-              ? novel.title.split(/(?<=、)/).map((line, i) => <span key={i}>{line}</span>)
+              ? (novel.coverTitleLines ?? novel.title.split(/(?<=、)/)).map((line, i) => <span key={i}>{line}</span>)
               : novel.title}
           </div>
           {novel.volume && <div className="book-cover__volume">{novel.volume}</div>}
