@@ -117,6 +117,7 @@ function ShelfBook({
       </button>
       <div className="shelf-slot__plaque">
         <span className="shelf-slot__plaque-title">{novel.title}</span>
+        {novel.volume && <span className="shelf-slot__plaque-volume">{novel.volume}</span>}
       </div>
     </div>
   );

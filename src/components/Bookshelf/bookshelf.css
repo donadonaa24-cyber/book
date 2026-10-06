@@ -222,6 +222,12 @@
   letter-spacing: 0.08em;
 }
 
+.shelf-slot__plaque-volume {
+  flex: none;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
 /* ── 飾りの背表紙・小物 ─────────────── */
 
 .decor-spine {

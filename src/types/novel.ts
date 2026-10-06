@@ -73,6 +73,8 @@ export interface Novel {
   coverHasTitle?: boolean;
   /** 表紙のタイトル文字を縦書きにする（長い和文タイトル向け。「、」の後で改行する） */
   coverTitleVertical?: boolean;
+  /** 上巻・下巻など。本棚の名札と表紙に小さく表示する */
+  volume?: string;
   themeColor: string;
   /** 表紙・背表紙のアクセント色（省略時は白系） */
   accentColor?: string;
