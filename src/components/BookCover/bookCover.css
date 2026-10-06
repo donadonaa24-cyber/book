@@ -61,6 +61,23 @@
   padding-top: 10cqw;
 }
 
+/* 縦書きタイトルの表紙では巻数の札が副題の代わりになる */
+.book-cover--vtitle .book-cover__subtitle {
+  display: none;
+}
+
+.book-cover__volume {
+  margin-top: 3cqw;
+  padding: 0.6cqw 2.6cqw;
+  border: 1px solid color-mix(in srgb, var(--cover-accent) 70%, transparent);
+  border-radius: 1cqw;
+  font-family: "Shippori Mincho", serif;
+  font-size: 4.4cqw;
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
+  color: color-mix(in srgb, var(--cover-accent) 40%, white);
+}
+
 .book-cover__rule {
   width: 22cqw;
   height: 1px;
