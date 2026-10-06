@@ -283,3 +283,114 @@
     padding: 0.45em 0.8em;
   }
 }
+
+/* ── BGM ─────────────────────── */
+
+.bgm {
+  position: relative;
+}
+
+.bgm__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+}
+
+.bgm__toggle--off {
+  color: var(--room-text-soft);
+  text-decoration: line-through;
+}
+
+/* ボタンの位置に関係なく、画面の右上に出す（スマホで左にはみ出さないように） */
+.bgm__panel {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 58px);
+  right: max(12px, env(safe-area-inset-right));
+  z-index: 30;
+  width: min(260px, calc(100vw - 32px));
+  padding: 14px 16px 12px;
+  background: #1d150f;
+  border: 1px solid rgba(233, 220, 198, 0.16);
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  animation: fade-in 0.2s ease both;
+}
+
+.bgm__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+  cursor: pointer;
+}
+
+.bgm__row--volume input {
+  flex: 1;
+  min-width: 0;
+  accent-color: var(--digital);
+}
+
+.bgm__row--disabled {
+  opacity: 0.45;
+}
+
+.bgm__value {
+  width: 2.2em;
+  text-align: right;
+  font-family: var(--font-latin);
+  color: var(--room-text-soft);
+}
+
+.bgm__switch {
+  appearance: none;
+  position: relative;
+  width: 40px;
+  height: 22px;
+  margin: 0;
+  border-radius: 999px;
+  background: rgba(233, 220, 198, 0.2);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.bgm__switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--room-text);
+  transition: transform 0.2s;
+}
+
+.bgm__switch:checked {
+  background: var(--digital);
+}
+
+.bgm__switch:checked::after {
+  transform: translateX(18px);
+}
+
+.bgm__switch:focus-visible {
+  outline: 2px solid var(--digital);
+  outline-offset: 3px;
+}
+
+.bgm__now {
+  margin: 8px 0 0;
+  padding-top: 8px;
+  border-top: 1px solid rgba(233, 220, 198, 0.1);
+  font-size: 0.78rem;
+  color: var(--room-text-soft);
+}
+
+@media (max-width: 520px) {
+  .bgm__label {
+    display: none;
+  }
+}

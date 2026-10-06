@@ -10,6 +10,9 @@ import { TextBlocks } from "./pages/TextPage";
 import { TitleContent } from "./pages/TitlePage";
 import { ImageContent } from "./pages/ImagePage";
 import { EndContent } from "./pages/EndPage";
+import { BgmControl } from "./BgmControl";
+import { bgm } from "../../lib/bgm/engine";
+import type { BgmMood } from "../../types/novel";
 import "./reader.css";
 
 interface Props {
@@ -155,10 +158,22 @@ export function Reader({ novel, pages, layout, writingMode, startIndex, interact
     [pages, windowStart, pageWidth, pageHeight, writingMode, restart, onExit],
   );
 
+  // BGM：各ページで流す雰囲気（指定のあるページから次の指定まで続く）
+  const moods = useMemo(() => {
+    let mood: BgmMood = "静寂";
+    return pages.map((p) => (mood = p.bgm ?? mood));
+  }, [pages]);
+  const visibleMood = moods[Math.min(current + (spread ? 1 : 0), moods.length - 1)];
+  useEffect(() => {
+    if (interactive) bgm.setMood(visibleMood);
+  }, [interactive, visibleMood]);
+
   // キーボード操作
   useEffect(() => {
     if (!interactive) return;
     const onKey = (e: KeyboardEvent) => {
+      // BGM の音量スライダーなどを操作しているときはページをめくらない
+      if (e.target instanceof Element && e.target.closest("input, [data-no-flip]")) return;
       if (tocOpen) {
         if (e.key === "Escape") setTocOpen(false);
         return;
@@ -226,6 +241,7 @@ export function Reader({ novel, pages, layout, writingMode, startIndex, interact
           {currentChapter && <span className="reader__chapter">{currentChapter}</span>}
         </div>
         <div className="reader__actions">
+          <BgmControl />
           {chapters.length > 1 && (
             <button
               type="button"

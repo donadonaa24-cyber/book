@@ -1,4 +1,17 @@
-import type { Chapter, ImagePageData, MessageLine, Paragraph, TextPageData } from "../types/novel";
+import type { BgmMood, Chapter, ImagePageData, MessageLine, Paragraph, TextPageData } from "../types/novel";
+
+const BGM_MOODS: readonly BgmMood[] = ["静寂", "日常", "切ない", "緊張", "高揚", "余韻", "幻想", "無音"];
+const BGM_LINE = /^[［\[]BGM[：:]\s*(.+?)\s*[］\]]$/i;
+
+/** 「［BGM：切ない］」の行なら雰囲気を返す（知らない名前は null） */
+function parseBgmLine(bare: string): BgmMood | null | undefined {
+  const m = BGM_LINE.exec(bare);
+  if (!m) return undefined;
+  const mood = m[1] as BgmMood;
+  if (BGM_MOODS.includes(mood)) return mood;
+  console.warn(`不明な BGM 指定: ${bare}（使えるのは ${BGM_MOODS.join("・")}）`);
+  return null;
+}
 
 /**
  * テキスト原稿をページデータに変換する。原稿をそのまま貼り付けられるようにするためのもの。
@@ -14,6 +27,9 @@ import type { Chapter, ImagePageData, MessageLine, Paragraph, TextPageData } fro
  * - 「［改ページ］」だけの行で強制的に改ページする
  * - 「［挿絵：/assets/novels/〜.webp］」だけの行で、その位置に挿絵のページを入れる
  *   「［挿絵：パス｜キャプション］」のように「｜」の後にキャプションも書ける
+ * - 「［BGM：切ない］」だけの行で、そのページから BGM を切り替える（表示はされない）
+ *   使える雰囲気: 静寂・日常・切ない・緊張・高揚・余韻・幻想・無音（無音で止める）
+ *   章の本文の最初の行に書くと、章扉から流れる。指定がなければ前の曲が続く
  */
 export function parseManuscript(raw: string): (TextPageData | ImagePageData)[] {
   const lines = raw.replace(/\r\n?/g, "\n").split("\n");
@@ -41,6 +57,9 @@ export function parseManuscript(raw: string): (TextPageData | ImagePageData)[] {
       const [src, caption] = bare.slice(4, -1).split(/[｜|]/).map((s) => s.trim());
       flush();
       pages.push({ type: "image", src, ...(caption ? { caption } : {}) });
+    } else if (BGM_LINE.test(bare)) {
+      const mood = parseBgmLine(bare);
+      if (mood) paragraphs.push({ type: "bgm", mood });
     } else if (bare === "◇" || /^[＊*※]{3}$/.test(bare.replace(/\s/g, ""))) {
       paragraphs.push({ type: "break" });
     } else if (bare.startsWith("«")) {
@@ -88,11 +107,16 @@ export function chaptersFromTextFiles(files: Record<string, string>): Chapter[] 
       const raw = files[path].replace(/\r\n?/g, "\n").replace(/^\uFEFF/, "");
       const nl = raw.indexOf("\n");
       const title = (nl < 0 ? raw : raw.slice(0, nl)).trim();
-      const body = nl < 0 ? "" : raw.slice(nl + 1);
+      let body = nl < 0 ? "" : raw.slice(nl + 1);
+      // 本文の最初の行が BGM 指定なら、章扉から流す
+      const head = /^\s*(\S[^\n]*)/.exec(body);
+      const bgm = head ? parseBgmLine(head[1].trim()) : undefined;
+      if (head && bgm !== undefined) body = body.slice(head[0].length);
       const name = (path.split("/").pop() ?? path).replace(/\.txt$/, "");
       return {
         id: `ch-${name}`,
         title,
+        ...(bgm ? { bgm } : {}),
         pages: [{ type: "title" as const, title }, ...parseManuscript(body)],
       };
     });

@@ -8,6 +8,7 @@ import type { ReadingAnchor } from "../../lib/progress";
 import { loadProgress, saveProgress } from "../../lib/progress";
 import { OpeningAnimation } from "../OpeningAnimation/OpeningAnimation";
 import { Reader } from "./Reader";
+import { bgm } from "../../lib/bgm/engine";
 
 interface Props {
   novel: Novel;
@@ -33,6 +34,9 @@ export function ReadingSession({ novel, mode, writingMode = novel.writingMode ??
   const anchorRef = useRef<ReadingAnchor>(
     mode === "resume" ? (loadProgress(novel.id)?.anchor ?? BEGINNING) : BEGINNING,
   );
+
+  // 本を閉じたら BGM を止める（雰囲気の切り替えは Reader がページごとに行う）
+  useEffect(() => () => bgm.setMood(null), []);
 
   useEffect(() => {
     let alive = true;
