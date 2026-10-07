@@ -4,7 +4,7 @@ import { chaptersFromTextFiles } from "../../../lib/manuscript";
 /**
  * 『星の終わりに君は生きる』特別編（本編の続き）の作品メタデータ。
  *
- * 火星へ渡った紗良とシロのその後と、兄弟との再会を描く。
+ * 火星へ渡った湊とシロのその後と、紗良・透真・ハルとの再会を描く。
  * 本文は text/ フォルダのテキストファイル（1ファイル＝1話）。ファイル名の順に並ぶ。
  * - 01.txt〜04.txt = 第一話〜第四話、05.txt = 最終話
  * - 1行目が話タイトル、2行目以降が本文（書式は src/lib/manuscript.ts）
@@ -23,7 +23,7 @@ export const hoshi2: Novel = {
   coverTitleLines: ["星の終わりに", "君は生きる"],
   themeColor: "#1d2f52",
   accentColor: "#bfe3f5",
-  description: "火星へ渡った紗良とシロ。青い夕焼けの星で、もう一度あの兄弟に会うまでの物語。",
+  description: "兄の遺した研究を抱え、シロと火星へ渡った湊。死のなくなった星で、それでも人として生き、還るまでの物語。",
   writingMode: "vertical",
   chapters: chaptersFromTextFiles(texts),
 };
