@@ -34,6 +34,7 @@ export function CharacterGallery({ initialWorkId, onClose }: Props) {
         <p className="characters__eyebrow">ANIANI BUNKO</p>
         <h1 ref={heading} tabIndex={-1}>登場人物</h1>
         <p>物語のそばにいる人たちを、イメージイラストで。</p>
+        <p className="characters__credit">キャラクターイラストは生成AIを使用して制作しています。</p>
       </header>
       <nav className="characters__works" aria-label="作品を選ぶ">
         {characterWorks.map((item) => (
@@ -69,6 +70,7 @@ export function CharacterGallery({ initialWorkId, onClose }: Props) {
           </header>
           <img src={assetUrl(selected.image)} alt={selected.name} width={1024} height={1536} />
           <p>{selected.description}</p>
+          <p className="characters__credit">このイラストは生成AIを使用して制作しています。</p>
         </>}
       </dialog>
     </main>
