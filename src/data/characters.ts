@@ -265,7 +265,7 @@ export const characterWorks: CharacterWork[] = [
         "name": "志遠の父",
         "role": "志遠の家族",
         "description": "家族のそばに立ち、静かに澪を気遣う父。",
-        "image": "/assets/novels/echoshion/characters/shion-father.png"
+        "image": "/assets/novels/echoshion/characters/shion-father-bike.png"
       },
       {
         "id": "shion-mother",
@@ -293,7 +293,7 @@ export const characterWorks: CharacterWork[] = [
         "name": "澪の父",
         "role": "澪の家族",
         "description": "澪のもとへ届ける果物を選び、言葉と気遣いで支える父。",
-        "image": "/assets/novels/echoshion/characters/mio-father.png"
+        "image": "/assets/novels/echoshion/characters/mio-father-glasses.png"
       },
       {
         "id": "mio-mother",
