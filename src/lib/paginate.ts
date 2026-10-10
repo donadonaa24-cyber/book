@@ -45,7 +45,7 @@ export type LayoutPage =
   | (PageBase & { kind: "blank" })
   | (PageBase & { kind: "title"; novelTitle: string; title: string; subtitle?: string; author: string })
   | (PageBase & { kind: "text"; blocks: LayoutBlock[] })
-  | (PageBase & { kind: "image"; src: string; caption?: string; alt?: string })
+  | (PageBase & { kind: "image"; src: string; caption?: string; alt?: string; generatedWithAI?: boolean })
   | (PageBase & { kind: "end"; novelTitle: string });
 
 export interface PaginateOptions {
@@ -208,6 +208,7 @@ export function paginateNovel(novel: Novel, opts: PaginateOptions): LayoutPage[]
             src: src.src,
             caption: src.caption,
             alt: src.alt,
+            generatedWithAI: src.generatedWithAI,
           });
           return;
         }

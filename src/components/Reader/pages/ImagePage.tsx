@@ -5,13 +5,14 @@ interface Props {
   src: string;
   caption?: string;
   alt?: string;
+  generatedWithAI?: boolean;
 }
 
 /**
  * 挿絵。画像が未用意（読み込み失敗）の場合はプレースホルダーを表示する。
  * public/assets/novels/<id>/illustrations/ に同名ファイルを置けば自動で差し替わる。
  */
-export function ImageContent({ src, caption, alt }: Props) {
+export function ImageContent({ src, caption, alt, generatedWithAI }: Props) {
   const [failed, setFailed] = useState(false);
   const fileName = src.split("/").pop();
 
@@ -40,6 +41,7 @@ export function ImageContent({ src, caption, alt }: Props) {
         )}
       </div>
       {caption && <figcaption className="image-page__caption">{caption}</figcaption>}
+      {generatedWithAI && <p className="image-page__credit">生成AIを使用したイラスト</p>}
     </figure>
   );
 }

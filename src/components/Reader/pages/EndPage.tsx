@@ -1,12 +1,17 @@
+import type { Novel } from "../../../types/novel";
+import { ImageContent } from "./ImagePage";
+
 interface Props {
   chapterTitle: string;
   onRestart: () => void;
   onExit: () => void;
+  illustration?: Novel["endIllustration"];
 }
 
-export function EndContent({ chapterTitle, onRestart, onExit }: Props) {
+export function EndContent({ chapterTitle, onRestart, onExit, illustration }: Props) {
   return (
-    <div className="end-page">
+    <div className={`end-page${illustration ? " end-page--illustrated" : ""}`}>
+      {illustration && <ImageContent {...illustration} />}
       <div className="end-page__mark">{chapterTitle}　了</div>
       <div className="end-page__next">つづく</div>
       <div className="end-page__actions" data-no-flip>

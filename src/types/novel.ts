@@ -64,6 +64,7 @@ export interface ImagePageData {
   src: string;
   caption?: string;
   alt?: string;
+  generatedWithAI?: boolean;
 }
 
 export type PageData = TitlePageData | TextPageData | ImagePageData;
@@ -98,6 +99,8 @@ export interface Novel {
   /** 書字方向。vertical = 縦書き・右綴じ（左へページをめくる）。省略時は横書き */
   writingMode?: WritingMode;
   chapters: Chapter[];
+  /** 最終ページに添えるイラスト（本文・章末の挿絵とは別） */
+  endIllustration?: Omit<ImagePageData, "type">;
 }
 
 export type WritingMode = "horizontal" | "vertical";
