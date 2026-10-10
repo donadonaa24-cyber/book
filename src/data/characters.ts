@@ -279,7 +279,7 @@ export const characterWorks: CharacterWork[] = [
         "name": "志遠の姉",
         "role": "志遠の家族",
         "description": "連絡や段取りを引き受け、家族と澪を支える姉。",
-        "image": "/assets/novels/echoshion/characters/shion-sister.png"
+        "image": "/assets/novels/echoshion/characters/shion-sister-corrected.png"
       },
       {
         "id": "shion-brother",
