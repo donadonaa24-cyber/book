@@ -104,7 +104,7 @@ export const characterWorks: CharacterWork[] = [
         "name": "EchoShion",
         "role": "端末の中の存在",
         "description": "志遠の記憶と声をもとに、端末の画面を通して澪と向き合う存在。",
-        "image": "/assets/novels/echoshion/characters/echoshion.png"
+        "image": "/assets/novels/echoshion/characters/echoshion-indoor.png"
       },
       {
         "id": "echo-usa",
