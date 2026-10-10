@@ -15,6 +15,7 @@ interface Props {
   progress: ReadingProgress | null;
   onOpen: (mode: OpenMode) => void;
   onClose: () => void;
+  onCharacters: () => void;
 }
 
 const FLY_MS = 620;
@@ -23,7 +24,7 @@ const FLY_MS = 620;
  * 本を手に取って表紙を大きく見せる画面。
  * 本棚の位置から中央へ移動する演出（FLIP アニメーション）と、本を開く操作を担当する。
  */
-export function CoverStage({ novel, fromRect, progress, onOpen, onClose }: Props) {
+export function CoverStage({ novel, fromRect, progress, onOpen, onClose, onCharacters }: Props) {
   const bookRef = useRef<HTMLDivElement>(null);
   const [phase, setPhase] = useState<"enter" | "shown" | "leaving" | "opening">("enter");
   const finished = !!progress?.finished;
@@ -128,6 +129,9 @@ export function CoverStage({ novel, fromRect, progress, onOpen, onClose }: Props
                 {finished ? "もう一度読む" : "本を開く"}
               </button>
             )}
+            <button type="button" className="btn" onClick={onCharacters} disabled={phase !== "shown"}>
+              登場人物
+            </button>
             <button type="button" className="btn btn--quiet" onClick={close}>
               本棚に戻す
             </button>
