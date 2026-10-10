@@ -32,6 +32,9 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,svg,png,jpg,jpeg,webp}"],
+        // 人物画像は閲覧時に既存の novel-images キャッシュへ保存する。
+        // 初回に全13枚をダウンロードしない。
+        globIgnores: ["**/characters/*.png"],
         navigateFallback: "index.html",
         runtimeCaching: [
           {

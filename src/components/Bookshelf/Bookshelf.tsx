@@ -13,13 +13,14 @@ interface Props {
   /** 表紙画面に取り出し中の本（本棚上では空きスペースとして描画） */
   pickedId: string | null;
   onSelect: (novel: Novel, rect: DOMRect) => void;
+  onCharacters: () => void;
 }
 
 const MIN_ROWS = 3;
 const LIFT_MS = 320;
 
 /** 本棚画面。作品は表紙を見せる形で並べ、余白には飾りの背表紙を置く */
-export function Bookshelf({ novels, pickedId, onSelect }: Props) {
+export function Bookshelf({ novels, pickedId, onSelect, onCharacters }: Props) {
   const { width } = useViewport();
   const [lifting, setLifting] = useState<string | null>(null);
   const busy = useRef(false);
@@ -49,6 +50,7 @@ export function Bookshelf({ novels, pickedId, onSelect }: Props) {
         <p className="shelf-room__eyebrow">BOOKSHELF</p>
         <h1 className="shelf-room__title">本棚</h1>
         <p className="shelf-room__hint">読みたい本を手に取ってください</p>
+        <button type="button" className="btn btn--bar shelf-room__characters" onClick={onCharacters}>登場人物をみる</button>
       </header>
 
       <div className="bookcase">
