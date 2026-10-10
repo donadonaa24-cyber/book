@@ -14,6 +14,9 @@ const chapters = chaptersFromTextFiles(texts);
 const designSheets: Record<string, { file: string; name: string }> = {
   "ch-01": { file: "shion-design.png", name: "志遠" },
   "ch-02": { file: "mio-design.png", name: "澪" },
+  "ch-03": { file: "echoshion-design.png", name: "EchoShion" },
+  "ch-07": { file: "hiyori-design.png", name: "日和" },
+  "ch-09": { file: "ray-design.png", name: "Ray" },
 };
 
 // 章末に追加し、既存の本文の元ページ番号（読書位置のアンカー）を保つ。
