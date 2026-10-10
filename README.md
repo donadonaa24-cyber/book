@@ -43,6 +43,10 @@ npm run preview    # ビルド結果の確認（PWA の動作確認はこちら�
 
 ## ディレクトリ構成
 
+『EchoShion』の第一章末に志遠、第二章末に澪の設定資料を掲載しています。資料内の誤ったプロフィール文は削除し、名前だけを表示します。最終ページには二人が並ぶ夕暮れのイラストを掲載しています。本文は変更せず、資料を章末に追加することで既存の読書位置アンカーを維持しています。挿絵にも生成AI使用を明記し、画像全体を紙面内に収めます。
+
+画像は `public/assets/novels/echoshion/illustrations/`、章末資料と最終ページの指定は `src/data/novels/echoshion/index.ts` で管理します。大きな挿絵はPWAの初回一括取得から除外し、閲覧時に `novel-images` へキャッシュします。
+
 ```
 public/assets/novels/echoshion/
   cover.svg                 表紙アート（タイトル文字なし）

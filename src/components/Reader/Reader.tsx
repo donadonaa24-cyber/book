@@ -142,20 +142,20 @@ export function Reader({ novel, pages, layout, writingMode, startIndex, interact
           case "image":
             return (
               <PageFrame key={p.key} {...common} variant="image" header={p.chapterTitle}>
-                <ImageContent src={p.src} caption={p.caption} alt={p.alt} />
+                <ImageContent src={p.src} caption={p.caption} alt={p.alt} generatedWithAI={p.generatedWithAI} />
               </PageFrame>
             );
           case "end":
             return (
               <PageFrame key={p.key} {...common} variant="end">
-                <EndContent chapterTitle={p.chapterTitle} onRestart={restart} onExit={onExit} />
+                <EndContent chapterTitle={p.chapterTitle} onRestart={restart} onExit={onExit} illustration={novel.endIllustration} />
               </PageFrame>
             );
           default:
             return <PageFrame key={p.key} {...common} variant="blank" />;
         }
       }),
-    [pages, windowStart, pageWidth, pageHeight, writingMode, restart, onExit],
+    [pages, windowStart, pageWidth, pageHeight, writingMode, restart, onExit, novel.endIllustration],
   );
 
   // BGM：各ページで流す雰囲気（指定のあるページから次の指定まで続く）

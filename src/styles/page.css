@@ -304,6 +304,14 @@
   text-align: center;
 }
 
+.image-page__credit {
+  flex: none;
+  margin: 0.5em 0 0;
+  font-size: 0.6em;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
 /* ── 終わりのページ ─────────────────── */
 
 .end-page {
@@ -332,4 +340,28 @@
   display: flex;
   flex-direction: column;
   gap: 0.6em;
+}
+
+.end-page--illustrated {
+  writing-mode: horizontal-tb;
+  height: 100%;
+  gap: 0.6em;
+}
+
+.end-page--illustrated .image-page {
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  height: auto;
+  padding: 0;
+}
+
+.end-page--illustrated .end-page__mark,
+.end-page--illustrated .end-page__next,
+.end-page--illustrated .end-page__actions {
+  flex: none;
+}
+
+.end-page--illustrated .end-page__actions {
+  margin-block-start: 0.3em;
 }
