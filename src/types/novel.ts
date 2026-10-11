@@ -67,7 +67,10 @@ export interface ImagePageData {
   generatedWithAI?: boolean;
 }
 
-export type PageData = TitlePageData | TextPageData | ImagePageData;
+export type PageData = (TitlePageData | TextPageData | ImagePageData) & {
+  /** 挿絵を取り除いた後も、保存済みの読書位置が参照する元ページ番号を保つ。 */
+  sourcePageIndex?: number;
+};
 
 export interface Chapter {
   id: string;
