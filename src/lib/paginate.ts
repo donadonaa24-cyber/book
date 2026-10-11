@@ -176,7 +176,8 @@ export function paginateNovel(novel: Novel, opts: PaginateOptions): LayoutPage[]
 
     novel.chapters.forEach((chapter, ci) => {
       chapter.pages.forEach((src, pi) => {
-        const baseAnchor: ReadingAnchor = { chapterIndex: ci, pageIndex: pi, paragraphIndex: 0, charOffset: 0 };
+        const sourceIndex = src.sourcePageIndex ?? pi;
+        const baseAnchor: ReadingAnchor = { chapterIndex: ci, pageIndex: sourceIndex, paragraphIndex: 0, charOffset: 0 };
 
         if (src.type === "title") {
           if (chapter.bgm) cue = chapter.bgm;
@@ -184,7 +185,7 @@ export function paginateNovel(novel: Novel, opts: PaginateOptions): LayoutPage[]
           if (opts.spread && pages.length % 2 === 0) pages.push(blank(baseAnchor, chapter.title));
           pages.push({
             kind: "title",
-            key: `${chapter.id}-${pi}`,
+            key: `${chapter.id}-${sourceIndex}`,
             number: ++number,
             anchor: baseAnchor,
             chapterTitle: chapter.title,
@@ -200,7 +201,7 @@ export function paginateNovel(novel: Novel, opts: PaginateOptions): LayoutPage[]
         if (src.type === "image") {
           pages.push({
             kind: "image",
-            key: `${chapter.id}-${pi}`,
+            key: `${chapter.id}-${sourceIndex}`,
             number: ++number,
             anchor: baseAnchor,
             chapterTitle: chapter.title,
@@ -223,11 +224,11 @@ export function paginateNovel(novel: Novel, opts: PaginateOptions): LayoutPage[]
           const first = blocks[0];
           pages.push({
             kind: "text",
-            key: `${chapter.id}-${pi}-${part++}`,
+            key: `${chapter.id}-${sourceIndex}-${part++}`,
             number: ++number,
             anchor: {
               chapterIndex: ci,
-              pageIndex: pi,
+              pageIndex: sourceIndex,
               paragraphIndex: first.paragraphIndex,
               charOffset: first.kind === "break" ? 0 : first.charOffset,
             },
@@ -394,13 +395,14 @@ export function paginateNovel(novel: Novel, opts: PaginateOptions): LayoutPage[]
     });
 
     const lastChapter = novel.chapters[novel.chapters.length - 1];
+    const lastSourcePage = lastChapter?.pages.at(-1);
     pages.push({
       kind: "end",
       key: "end",
       number: ++number,
       anchor: {
         chapterIndex: novel.chapters.length - 1,
-        pageIndex: lastChapter ? lastChapter.pages.length : 0,
+        pageIndex: lastSourcePage?.sourcePageIndex != null ? lastSourcePage.sourcePageIndex + 1 : lastChapter?.pages.length ?? 0,
         paragraphIndex: 0,
         charOffset: 0,
       },

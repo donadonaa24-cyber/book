@@ -49,15 +49,20 @@ npm run preview    # ビルド結果の確認（PWA の動作確認はこちら�
 
 『星の終わりに君は生きる』には透真・湊・ハル・シロ・紗良・玲奈・澄・颯太・律・テツ・アルマの11枚、『花散るさきの、幸せのかたち』には咲・花・エドワード・克也の4枚の設定資料を掲載しています。各人物につき画像は1枚で、登場・回想する章の末尾に分散しています。星は承認済みのアニメ調、花は水彩調を引き継ぎ、名前と生成AI使用の表記だけを載せています。アルマは人型ではなく縦に流れるデータの空間として描いています。
 
-星の画像は `public/assets/novels/hoshi/illustrations/`、花の画像は `public/assets/novels/hanachiru/illustrations/` に置きます。特別編・下巻・別巻の資料は同じ画像を再利用します。配置は各巻の `src/data/novels/<巻ID>/index.ts`、章末への追加は `src/lib/designSheets.ts` で管理しているため、今後の改稿では章IDに対応する配置だけを変更できます。本文テキストを編集せずに資料を追加し、元の本文ページ番号と読書位置を保っています。
+星の画像は `public/assets/novels/hoshi/illustrations/`、花の画像は `public/assets/novels/hanachiru/illustrations/` に置きます。配置は各巻の `src/data/novels/<巻ID>/index.ts`、章末への追加は `src/lib/designSheets.ts` で管理しています。本棚の一覧を組み立てる際に重複する画像を除外するため、設定資料は同じ作品の他の巻にも繰り返し掲載しません。
 
 | 巻 | 章末の設定資料 |
 |---|---|
 | 星・本編 | 第一話 透真／第二話 湊・玲奈／第三話 ハル／第四話 シロ／第五話 紗良／第六話 澄／第七話 律・テツ／第八話 颯太／最終話 アルマ |
-| 星・特別編 | 第一話 湊／第二話 透真／第三話 シロ／第四話 ハル／最終話 紗良 |
 | 花・上巻 | 第六話 咲／第九話 花／第十三話 克也／第十九話 エドワード |
-| 花・下巻 | 第二十五話 花／第二十七話 エドワード／番外編「文化祭の夜」 咲 |
-| 花・別巻 | 第二十五話 花／第二十六話 咲／第二十七話 エドワード |
+
+### 章末の人物イラスト
+
+設定資料とは別に、既存のガチャ用人物画像43枚も、それぞれ1回だけ登場・回想する章末へ分散して載せています（星20枚、花8枚、EchoShion15枚）。人物名と生成AI使用を表示し、新しいプロフィール文は加えていません。星の兵士型ロボットは作者指定の世界観資料として掲載します。
+
+配置は `src/data/chapterIllustrations.ts` の巻ID・章ID・人物IDで指定し、画像は人物紹介と同じ `public/assets/novels/<作品ID>/characters/` を参照します。今後の改稿では章IDに対応する配置を変更できます。『花散る』冒頭の旧エドワード・咲の挿絵2枚は表示から外しました。
+
+`src/lib/chapterIllustrations.ts` が人物画像を追加し、本棚全体で同じ画像の重複を除外します。本文・BGM・画像ファイルは変更せず、画像を外した章には `sourcePageIndex` を付け、既存のしおりが参照する元ページ番号を保ちます。画像は閲覧時にキャッシュし、初回のPWA一括取得には含めません。
 
 ```
 public/assets/novels/echoshion/
@@ -112,7 +117,7 @@ src/
 ## 挿絵を追加する
 
 `public/assets/novels/echoshion/illustrations/` に画像を置くだけで反映されます。
-章の `pages` 配列に `{ type: "image", src: "/assets/novels/echoshion/illustrations/xxx.png", caption: "…" }` を挟むと挿絵ページになります（現在は挿絵なし）。
+章の `pages` 配列に `{ type: "image", src: "/assets/novels/echoshion/illustrations/xxx.png", caption: "…" }` を挟むと挿絵ページになります。生成AIを使用した画像には `generatedWithAI: true` を指定します。
 ファイルが無い間は「挿絵（準備中）」のプレースホルダーが表示されます。
 
 ## 表紙を差し替える
