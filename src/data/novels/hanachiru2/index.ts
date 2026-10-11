@@ -1,5 +1,6 @@
 import type { Novel } from "../../../types/novel";
 import { chaptersFromTextFiles } from "../../../lib/manuscript";
+import { withChapterDesignSheets } from "../../../lib/designSheets";
 
 /**
  * 『花散るさきの、幸せのかたち』下巻（第二部）の作品メタデータ。
@@ -11,6 +12,12 @@ import { chaptersFromTextFiles } from "../../../lib/manuscript";
  * - 1行目が話タイトル、2行目以降が本文（書式は src/lib/manuscript.ts）
  */
 const texts = import.meta.glob<string>("./text/*.txt", { query: "?raw", import: "default", eager: true });
+
+const chapters = withChapterDesignSheets(chaptersFromTextFiles(texts), "hanachiru", {
+  "ch-25": [{ file: "hana-design.png", name: "花" }],
+  "ch-27": [{ file: "edward-design.png", name: "エドワード" }],
+  "ch-44": [{ file: "saki-design.png", name: "咲" }],
+});
 
 export const hanachiru2: Novel = {
   id: "hanachiru2",
@@ -25,5 +32,5 @@ export const hanachiru2: Novel = {
   accentColor: "#f3d36b",
   description: "出所した花と、咲を想い続けた男。第二部と番外編、あとがきを収録。",
   writingMode: "vertical",
-  chapters: chaptersFromTextFiles(texts),
+  chapters,
 };

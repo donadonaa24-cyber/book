@@ -1,5 +1,6 @@
 import type { Novel } from "../../../types/novel";
 import { chaptersFromTextFiles } from "../../../lib/manuscript";
+import { withChapterDesignSheets } from "../../../lib/designSheets";
 
 /**
  * 『花散るさきの、幸せのかたち』上巻（第一部：第一話〜第二十三話）の作品メタデータ。
@@ -11,6 +12,13 @@ import { chaptersFromTextFiles } from "../../../lib/manuscript";
  * 第二部以降は下巻（../hanachiru2）に収録している。
  */
 const texts = import.meta.glob<string>("./text/*.txt", { query: "?raw", import: "default", eager: true });
+
+const chapters = withChapterDesignSheets(chaptersFromTextFiles(texts), "hanachiru", {
+  "ch-06": [{ file: "saki-design.png", name: "咲" }],
+  "ch-09": [{ file: "hana-design.png", name: "花" }],
+  "ch-13": [{ file: "katsuya-design.png", name: "克也" }],
+  "ch-19": [{ file: "edward-design.png", name: "エドワード" }],
+});
 
 export const hanachiru: Novel = {
   id: "hanachiru",
@@ -25,5 +33,5 @@ export const hanachiru: Novel = {
   accentColor: "#f6c9d3",
   description: "墓前で語られる、林家の姉妹と家族の物語。第一部（第一話〜第二十三話）。",
   writingMode: "vertical",
-  chapters: chaptersFromTextFiles(texts),
+  chapters,
 };
