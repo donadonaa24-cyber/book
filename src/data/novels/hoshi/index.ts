@@ -16,7 +16,6 @@ import { withChapterDesignSheets } from "../../../lib/designSheets";
 const texts = import.meta.glob<string>("./text/*.txt", { query: "?raw", import: "default", eager: true });
 
 const chapters = withChapterDesignSheets(chaptersFromTextFiles(texts), "hoshi", {
-  "ch-01": [{ file: "touma-design.png", name: "透真" }],
   "ch-02": [{ file: "rena-design.png", name: "玲奈" }],
   "ch-03": [{ file: "haru-design.png", name: "ハル" }],
   "ch-04": [{ file: "sara-design.png", name: "紗良" }],
@@ -24,7 +23,12 @@ const chapters = withChapterDesignSheets(chaptersFromTextFiles(texts), "hoshi", 
   "ch-06": [{ file: "sumi-design.png", name: "澄" }],
   "ch-08": [{ file: "shiro-design.png", name: "シロ" }],
   "ch-10": [{ file: "sota-design.png", name: "颯太" }],
-  "ch-11": [{ file: "ritsu-design.png", name: "律" }, { file: "tetsu-design.png", name: "テツ" }],
+  // 透真の設定画は大人の姿なので、二十歳前後になる第十一章に置く
+  "ch-11": [
+    { file: "touma-design.png", name: "透真" },
+    { file: "ritsu-design.png", name: "律" },
+    { file: "tetsu-design.png", name: "テツ" },
+  ],
 });
 
 export const hoshi: Novel = {
