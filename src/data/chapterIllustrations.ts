@@ -9,10 +9,14 @@ export const chapterIllustrations: Record<string, Record<string, readonly string
     "ch-11": ["yui", "kuze", "ritsu"],
     "ch-12": ["hiroto"],
     "ch-14": ["rena", "tetsu", "touma"],
+  },
+  "hoshi-vol2": {
     // 兵士型ロボットは作者指定の世界観資料。本文の四脚型防衛機とは別。
     "ch-15": ["enemy-soldier", "soldier-robot"],
     "ch-16": ["sara"],
     "ch-20": ["shiro"],
+  },
+  "hoshi-vol3": {
     "ch-34": ["alma"],
     "ch-36": ["sota"],
   },

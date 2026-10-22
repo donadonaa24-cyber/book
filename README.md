@@ -49,7 +49,7 @@ npm run preview    # ビルド結果の確認（PWA の動作確認はこちら�
 
 『星の終わりに君は生きる』には透真・湊・ハル・シロ・紗良・玲奈・澄・颯太・律・テツ・アルマの11枚、『花散るさきの、幸せのかたち』には咲・花・エドワード・克也の4枚の設定資料を掲載しています。各人物につき画像は1枚で、登場・回想する章の末尾に分散しています。星は承認済みのアニメ調、花は水彩調を引き継ぎ、名前と生成AI使用の表記だけを載せています。アルマは人型ではなく縦に流れるデータの空間として描いています。
 
-『星の終わりに君は生きる』の本文は、完成稿（`novel_draft/hoshi_complete/` の Markdown、全40章＋終幕）を `python3 novel_draft/hoshi_complete/export_to_app.py` で `src/data/novels/hoshi/text/` に書き出したものです。本文を直すときは Markdown を直して書き出し直します。旧版の改稿本文は `src/data/novels/hoshi/text_v1/`、作者の元原稿は `original/` に残しています。旧特別編（`src/data/novels/hoshi2/`）は完成稿と設定が矛盾するため本棚から外しています（ファイルは保存。`src/data/novels/index.ts` に戻せば再表示されます）。
+『星の終わりに君は生きる』の本文は、完成稿（`novel_draft/hoshi_complete/` の Markdown、全40章＋終幕）を `python3 novel_draft/hoshi_complete/export_to_app.py` で三部作の三冊（第一部 `src/data/novels/hoshi/text/`、第二部 `src/data/novels/hoshi-vol2/text/`、第三部＋終幕＋あとがき `src/data/novels/hoshi-vol3/text/`）に書き出したものです。章番号は三冊通しです。本文を直すときは Markdown を直して書き出し直します。旧版の改稿本文は `src/data/novels/hoshi/text_v1/`、作者の元原稿は `original/` に残しています。旧特別編（`src/data/novels/hoshi2/`）は完成稿と設定が矛盾するため本棚から外しています（ファイルは保存。`src/data/novels/index.ts` に戻せば再表示されます）。
 
 星の画像は `public/assets/novels/hoshi/illustrations/`、花の画像は `public/assets/novels/hanachiru/illustrations/` に置きます。配置は各巻の `src/data/novels/<巻ID>/index.ts`、章末への追加は `src/lib/designSheets.ts` で管理しています。本棚の一覧を組み立てる際に重複する画像を除外するため、設定資料は同じ作品の他の巻にも繰り返し掲載しません。
 

@@ -2,8 +2,11 @@
 
     python3 novel_draft/hoshi_complete/export_to_app.py
 
-出力先：src/data/novels/hoshi/text/（既存の .txt はいったん全部消して作り直す）
-- 部扉：00.txt（第一部）、14a.txt（第二部）、29a.txt（第三部）
+出力先（三部作を三冊に分けて書き出す。各 text/ の既存 .txt はいったん全部消して作り直す）
+- 第一部：src/data/novels/hoshi/text/       … 00.txt（部扉）、01.txt〜14.txt
+- 第二部：src/data/novels/hoshi-vol2/text/  … 14a.txt（部扉）、15.txt〜29.txt
+- 第三部：src/data/novels/hoshi-vol3/text/  … 29a.txt（部扉）、30.txt〜40.txt、41.txt、42.txt
+- ファイル番号は三冊通しのまま（章 ID・挿絵の配置を変えないため）
 - 章：01.txt〜40.txt、終幕：41.txt、あとがき：42.txt（作者のあとがきを旧版 text_v1/10.txt からそのまま複製）
 - 1行目が章タイトル、本文の最初の行が BGM 指定（src/lib/manuscript.ts の書式）
 - 章の途中の BGM・挿絵は下の CUES で、本文中の一文を目印に挿入する
@@ -14,7 +17,16 @@ import re
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
-OUT = os.path.join(ROOT, "src", "data", "novels", "hoshi", "text")
+NOVELS = os.path.join(ROOT, "src", "data", "novels")
+VOLUMES = [os.path.join(NOVELS, d, "text") for d in ("hoshi", "hoshi-vol2", "hoshi-vol3")]
+
+
+PART_VOLUME = {"00": 0, "14a": 1, "29a": 2}
+
+
+def out_dir(n):
+    """章番号から書き出し先の巻を決める。"""
+    return VOLUMES[0 if n <= 14 else 1 if n <= 29 else 2]
 ILL = "/assets/novels/hoshi/illustrations/"
 
 PARTS = {
@@ -162,11 +174,12 @@ def apply_cues(n, body):
 
 
 def main():
-    os.makedirs(OUT, exist_ok=True)
-    for old in glob.glob(os.path.join(OUT, "*.txt")):
-        os.remove(old)
+    for vol in VOLUMES:
+        os.makedirs(vol, exist_ok=True)
+        for old in glob.glob(os.path.join(vol, "*.txt")):
+            os.remove(old)
     for name, (title, bgm, sub) in PARTS.items():
-        with open(os.path.join(OUT, f"{name}.txt"), "w", encoding="utf-8") as f:
+        with open(os.path.join(VOLUMES[PART_VOLUME[name]], f"{name}.txt"), "w", encoding="utf-8") as f:
             f.write(f"{title}\n［BGM：{bgm}］\n\n　{sub}\n")
     files = sorted(glob.glob(os.path.join(HERE, "0[1-3]_*", "第*.md"))) + [
         os.path.join(HERE, "04_終幕", "終幕_僕が帰るとき.md")
@@ -178,14 +191,15 @@ def main():
         title, body = convert(open(f, encoding="utf-8").read())
         body = apply_cues(n, body)
         text = f"{title}\n［BGM：{START_BGM[n]}］\n\n" + "\n".join(body) + "\n"
-        with open(os.path.join(OUT, f"{n:02d}.txt"), "w", encoding="utf-8") as out:
+        with open(os.path.join(out_dir(n), f"{n:02d}.txt"), "w", encoding="utf-8") as out:
             out.write(text)
     # 作者のあとがき（旧版の 10.txt）はそのまま最後に残す
     afterword = os.path.join(ROOT, "src", "data", "novels", "hoshi", "text_v1", "10.txt")
     if os.path.exists(afterword):
-        with open(afterword, encoding="utf-8") as src, open(os.path.join(OUT, "42.txt"), "w", encoding="utf-8") as out:
+        with open(afterword, encoding="utf-8") as src, open(os.path.join(VOLUMES[2], "42.txt"), "w", encoding="utf-8") as out:
             out.write(src.read())
-    print(f"{len(files)} chapters + {len(PARTS)} part pages -> {os.path.relpath(OUT, ROOT)}")
+    for vol in VOLUMES:
+        print(f"{os.path.relpath(vol, ROOT)}: {len(glob.glob(os.path.join(vol, '*.txt')))} files")
 
 
 if __name__ == "__main__":
