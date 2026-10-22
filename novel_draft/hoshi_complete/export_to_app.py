@@ -22,6 +22,8 @@ VOLUMES = [os.path.join(NOVELS, d, "text") for d in ("hoshi", "hoshi-vol2", "hos
 
 
 PART_VOLUME = {"00": 0, "14a": 1, "29a": 2}
+# 部扉に入れる挿絵（第二部の扉は、管理区域と未管理区域の二つの空）
+PART_ILLUSTRATION = {"14a": "12-two-skylines.webp"}
 
 
 def out_dir(n):
@@ -48,7 +50,6 @@ START_BGM = {
 # 章番号 → [(目印の文, 挿入する行, "after" | "before")]
 CUES = {
     1: [
-        ("与えられた未来だった。", f"［挿絵：{ILL}12-two-skylines.webp］", "after"),
         ("　学習棟の歴史の授業は、必修だった。", "［BGM：日常］", "before"),
         ("　居住棟の消灯時刻は決まっている。けれど子どもは、ときどき眠れない。", "［BGM：静寂］", "before"),
         ("　政府中央演算塔《エデン・コア》の最深部で、人間の知らない計算が続いていた。", "［BGM：幻想］", "before"),
@@ -71,10 +72,8 @@ CUES = {
     ],
     12: [
         ("　紗良は、そこで立ち止まった。灯りを消した。", "［BGM：余韻］", "before"),
-        ("　紗良は、そこで立ち止まった。灯りを消した。", f"［挿絵：{ILL}13-bonfire-stars.webp］", "before"),
     ],
     14: [
-        ("　人間が住む前に住める場所を作る。それが、今のALMAの方針だと言われていた。", f"［挿絵：{ILL}14-rocket-robodog.webp］", "after"),
         ("　中央演算塔《エデン・コア》、最深部。", "［BGM：幻想］", "before"),
     ],
     15: [
@@ -88,7 +87,7 @@ CUES = {
     ],
     17: [
         ("　冷却制御層の扉の前で、最後の一機が待っていた。", "［BGM：無音］", "before"),
-        ("　紗良は、湊の膝の上で、それを聞いていた。", f"［挿絵：{ILL}09-fallen-woman-2.webp］", "before"),
+        ("　短く刈りこんだ髪が、煙の中に沈んでいくのが見えた。", f"［挿絵：{ILL}09-fallen-woman-2.webp］", "after"),
         ("　紗良は、湊の膝の上で、それを聞いていた。", "［BGM：切ない］", "before"),
     ],
     18: [
@@ -106,6 +105,10 @@ CUES = {
     29: [
         ("　遮断室の中に、寝台が一つ、置かれていた。", "［BGM：幻想］", "before"),
         ("　三日後、五人は、拠点の西の丘の上に湊を埋めた。", "［BGM：余韻］", "before"),
+    ],
+    30: [
+        ("　空には、星が埋まっていた。", f"［挿絵：{ILL}13-bonfire-stars.webp］", "after"),
+        ("　廊下の窓の外で、発射塔の向こうに、白い雲が流れていた。", f"［挿絵：{ILL}14-rocket-robodog.webp］", "after"),
     ],
     32: [
         ("　冷却制御層の扉の前に、最後の一機が待っていた。", "［BGM：無音］", "before"),
@@ -181,6 +184,8 @@ def main():
     for name, (title, bgm, sub) in PARTS.items():
         with open(os.path.join(VOLUMES[PART_VOLUME[name]], f"{name}.txt"), "w", encoding="utf-8") as f:
             f.write(f"{title}\n［BGM：{bgm}］\n\n　{sub}\n")
+            if name in PART_ILLUSTRATION:
+                f.write(f"\n［挿絵：{ILL}{PART_ILLUSTRATION[name]}］\n")
     files = sorted(glob.glob(os.path.join(HERE, "0[1-3]_*", "第*.md"))) + [
         os.path.join(HERE, "04_終幕", "終幕_僕が帰るとき.md")
     ]
