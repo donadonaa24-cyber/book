@@ -99,6 +99,8 @@
 
 　短く刈りこんだ髪が、煙の中に沈んでいくのが見えた。
 
+［挿絵：/assets/novels/hoshi/illustrations/09-fallen-woman-2.webp］
+
 　――あんたは伸ばしな。戦争が終わったら、切る楽しみが残るでしょ。
 
 　戦争は、まだ終わっていなかった。
@@ -210,8 +212,6 @@
 　冷却装置を壊す意味は、最初からなかった。
 
 　ここへ来たこと自体が、最後の一撃を飾る駒でしかなかったのだ。
-
-［挿絵：/assets/novels/hoshi/illustrations/09-fallen-woman-2.webp］
 
 ［BGM：切ない］
 

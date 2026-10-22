@@ -297,6 +297,8 @@
 
 　空には、星が埋まっていた。
 
+［挿絵：/assets/novels/hoshi/illustrations/13-bonfire-stars.webp］
+
 「寒くない？」
 
 「右側は平気」
@@ -638,6 +640,8 @@
 　それから、笑うのをやめた。
 
 　廊下の窓の外で、発射塔の向こうに、白い雲が流れていた。
+
+［挿絵：/assets/novels/hoshi/illustrations/14-rocket-robodog.webp］
 
 ◇
 
