@@ -3,20 +3,20 @@ export const chapterIllustrations: Record<string, Record<string, readonly string
   hoshi: {
     "ch-01": ["security-drone"],
     "ch-02": ["haru", "sumi", "rebel-soldier"],
-    "ch-03": ["gen"],
-    "ch-04": ["yui", "kuze", "ritsu"],
-    "ch-05": ["hiroto", "riku", "minato"],
-    "ch-06": ["rena", "tetsu", "touma"],
-    "ch-07": ["enemy-soldier"],
-    "ch-08": ["sara"],
+    "ch-04": ["gen"],
+    "ch-06": ["riku"],
+    "ch-07": ["minato"],
+    "ch-11": ["yui", "kuze", "ritsu"],
+    "ch-12": ["hiroto"],
+    "ch-14": ["rena", "tetsu", "touma"],
     // 兵士型ロボットは作者指定の世界観資料。本文の四脚型防衛機とは別。
-    "ch-09": ["soldier-robot"],
+    "ch-15": ["enemy-soldier", "soldier-robot"],
+    "ch-16": ["sara"],
+    "ch-20": ["shiro"],
+    "ch-34": ["alma"],
+    "ch-36": ["sota"],
   },
-  hoshi2: {
-    "ch-01": ["shiro"],
-    "ch-03": ["sota"],
-    "ch-05": ["alma"],
-  },
+  // 旧特別編（hoshi2）は本棚から外したため配置なし。
   hanachiru: {
     "ch-02": ["saki", "kaede", "sachiko"],
     "ch-03": ["ryoji", "toru"],
