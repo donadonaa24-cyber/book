@@ -25,9 +25,9 @@ export function Bookshelf({ novels, pickedId, onSelect, onCharacters }: Props) {
   const [lifting, setLifting] = useState<string | null>(null);
   const busy = useRef(false);
 
-  const perRow = width < 560 ? 2 : width < 960 ? 3 : 4;
-  const rows: Novel[][] = [];
-  for (let i = 0; i < novels.length; i += perRow) rows.push(novels.slice(i, i + perRow));
+  const narrow = width < 560;
+  const perRow = width < 960 ? 3 : 4;
+  const rows = shelfRows(novels, perRow);
   while (rows.length < MIN_ROWS) rows.push([]);
 
   const handlePick = (novel: Novel, el: HTMLElement) => {
@@ -56,7 +56,11 @@ export function Bookshelf({ novels, pickedId, onSelect, onCharacters }: Props) {
       <div className="bookcase">
         <div className="bookcase__crown" aria-hidden="true" />
         {rows.map((row, ri) => {
-          const decorCount = Math.max(0, (perRow - row.length) * 3 + (row.length ? 2 : 4));
+          // スマホは3冊でほぼ棚が埋まるため、飾りは空いた分だけにして本が端で切れないようにする
+          const full = row.length === perRow;
+          const decorCount = narrow
+            ? (perRow - row.length) * 2 + (row.length ? 0 : 4)
+            : Math.max(0, (perRow - row.length) * 3 + (row.length ? 2 : 4));
           const decor = decorFor(ri, decorCount);
           const split = ri % 2 === 0 ? 0 : Math.ceil(decor.length / 2);
           return (
@@ -78,7 +82,7 @@ export function Bookshelf({ novels, pickedId, onSelect, onCharacters }: Props) {
                   <DecorItem key={`b${i}`} decor={d} />
                 ))}
                 {ri === 0 && <span className="decor-bookend" aria-hidden="true" />}
-                {ri === MIN_ROWS - 1 && <span className="decor-plant" aria-hidden="true" />}
+                {ri === MIN_ROWS - 1 && !(narrow && full) && <span className="decor-plant" aria-hidden="true" />}
               </div>
               <div className="bookcase__board" aria-hidden="true" />
             </div>
@@ -89,6 +93,26 @@ export function Bookshelf({ novels, pickedId, onSelect, onCharacters }: Props) {
       <p className="shelf-room__footer">作品は順次追加予定です</p>
     </div>
   );
+}
+
+/** 同じ作品の巻（同じタイトルが続く本）は、1段に収まるなら段をまたがないように並べる */
+function shelfRows(novels: Novel[], perRow: number): Novel[][] {
+  const series: Novel[][] = [];
+  for (const novel of novels) {
+    const last = series[series.length - 1];
+    if (last && last[0].title === novel.title) last.push(novel);
+    else series.push([novel]);
+  }
+  const rows: Novel[][] = [];
+  for (const books of series) {
+    for (let i = 0; i < books.length; i += perRow) {
+      const chunk = books.slice(i, i + perRow);
+      const row = rows[rows.length - 1];
+      if (row && row.length + chunk.length <= perRow) row.push(...chunk);
+      else rows.push(chunk);
+    }
+  }
+  return rows;
 }
 
 function ShelfBook({

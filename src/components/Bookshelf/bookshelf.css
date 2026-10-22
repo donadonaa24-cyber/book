@@ -293,7 +293,27 @@
     margin-bottom: 20px;
   }
 
+  /* スマホでも同じ作品の3冊が1段に並ぶ幅にする */
+  .shelf-room {
+    --book-w: min(150px, calc((100vw - 140px) / 3));
+  }
+
+  .bookcase__books {
+    padding: 0 6px;
+  }
+
   .shelf-slot {
-    margin: 0 8px;
+    margin: 0 5px;
+  }
+
+  .shelf-slot__plaque {
+    gap: 4px;
+    padding: 1px 6px;
+    font-size: 9px;
+  }
+
+  .shelf-slot__plaque-title {
+    font-size: 9px;
+    letter-spacing: 0.04em;
   }
 }
