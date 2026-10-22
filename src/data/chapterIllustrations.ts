@@ -5,9 +5,10 @@ export const chapterIllustrations: Record<string, Record<string, readonly string
     "ch-02": ["haru", "sumi", "rebel-soldier"],
     "ch-04": ["gen"],
     "ch-06": ["riku"],
-    "ch-07": ["minato"],
     "ch-11": ["yui", "kuze", "ritsu"],
     "ch-12": ["hiroto"],
+    // 湊の人物画は青年の姿なので、十八〜二十歳の第十三章に置く
+    "ch-13": ["minato"],
     "ch-14": ["rena", "tetsu", "touma"],
   },
   "hoshi-vol2": {
