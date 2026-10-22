@@ -19,7 +19,6 @@ const chapters = withChapterDesignSheets(chaptersFromTextFiles(texts), "hoshi", 
   "ch-02": [{ file: "rena-design.png", name: "玲奈" }],
   "ch-03": [{ file: "haru-design.png", name: "ハル" }],
   "ch-04": [{ file: "sara-design.png", name: "紗良" }],
-  "ch-05": [{ file: "minato-design.png", name: "湊" }],
   "ch-06": [{ file: "sumi-design.png", name: "澄" }],
   "ch-08": [{ file: "shiro-design.png", name: "シロ" }],
   "ch-10": [{ file: "sota-design.png", name: "颯太" }],
@@ -29,6 +28,8 @@ const chapters = withChapterDesignSheets(chaptersFromTextFiles(texts), "hoshi", 
     { file: "ritsu-design.png", name: "律" },
     { file: "tetsu-design.png", name: "テツ" },
   ],
+  // 湊の設定画も青年の姿なので、十八歳になる第十二章に置く
+  "ch-12": [{ file: "minato-design.png", name: "湊" }],
 });
 
 export const hoshi: Novel = {
