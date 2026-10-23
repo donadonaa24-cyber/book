@@ -1,4 +1,5 @@
 import type { BgmMood, Chapter, ImagePageData, MessageLine, Paragraph, TextPageData } from "../types/novel";
+import { markBouten } from "./typeset";
 
 const BGM_MOODS: readonly BgmMood[] = ["静寂", "日常", "切ない", "緊張", "高揚", "余韻", "幻想", "無音"];
 const BGM_LINE = /^[［\[]BGM[：:]\s*(.+?)\s*[］\]]$/i;
@@ -27,6 +28,7 @@ function parseBgmLine(bare: string): BgmMood | null | undefined {
  * - 「［改ページ］」だけの行で強制的に改ページする
  * - 「［挿絵：/assets/novels/〜.webp］」だけの行で、その位置に挿絵のページを入れる
  *   「［挿絵：パス｜キャプション］」のように「｜」の後にキャプションも書ける
+ * - 《《〜》》で囲んだ部分に傍点を付ける（例：扉の前で湊は《《三回》》深呼吸をした。）
  * - 「［BGM：切ない］」だけの行で、そのページから BGM を切り替える（表示はされない）
  *   使える雰囲気: 静寂・日常・切ない・緊張・高揚・余韻・幻想・無音（無音で止める）
  *   章の本文の最初の行に書くと、章扉から流れる。指定がなければ前の曲が続く
@@ -82,7 +84,7 @@ export function parseManuscript(raw: string): (TextPageData | ImagePageData)[] {
       while (trimmed[trimmed.length - 1] === "") trimmed.pop();
       if (trimmed.length) paragraphs.push({ type: "message", lines: trimmed.map(parseMessageLine) });
     } else {
-      paragraphs.push(line);
+      paragraphs.push(markBouten(line));
     }
   }
   flush();
@@ -92,7 +94,7 @@ export function parseManuscript(raw: string): (TextPageData | ImagePageData)[] {
 function parseMessageLine(text: string): MessageLine {
   if (text === "") return { text: "" };
   const m = /^([^\s：:]{1,8})[：:](.+)$/.exec(text);
-  return m ? { from: m[1], text: m[2] } : { text };
+  return m ? { from: m[1], text: markBouten(m[2]) } : { text: markBouten(text) };
 }
 
 /**

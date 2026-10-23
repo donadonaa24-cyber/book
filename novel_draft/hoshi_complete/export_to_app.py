@@ -64,7 +64,7 @@ CUES = {
         ("　次に目を覚ましたとき、そこは白い医療室だった。", "［BGM：静寂］", "before"),
     ],
     8: [
-        ("　起動スイッチを押すと、白い機械は小さく身震いして、四本の脚で立ち上がった。", f"［挿絵：{ILL}03-cyborg-dog.webp｜シロ］", "before"),
+        ("　白い機械が、透真の足元で口を開いた。", f"［挿絵：{ILL}03-cyborg-dog.webp｜シロ］", "before"),
     ],
     10: [
         ("　作戦の日。", "［BGM：緊張］", "before"),
@@ -163,10 +163,15 @@ def convert(md: str):
     return title, body
 
 
+def norm(text):
+    """目印の照合用。読点・空白・傍点の記号の違いは無視する（文体の推敲で読点を減らしても目印が外れないように）"""
+    return re.sub(r"[、　 《》]", "", text)
+
+
 def apply_cues(n, body):
     for anchor, directive, where in CUES.get(n, []):
-        key = anchor.strip("　 ")
-        idx = next((i for i, l in enumerate(body) if l.strip("　 ").startswith(key)), None)
+        key = norm(anchor)
+        idx = next((i for i, l in enumerate(body) if norm(l).startswith(key)), None)
         if idx is None:
             raise SystemExit(f"第{n}章：目印が見つかりません：{anchor}")
         if where == "after":

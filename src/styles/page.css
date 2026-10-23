@@ -158,6 +158,12 @@
   text-combine-upright: all;
 }
 
+/* 傍点（原稿の《《〜》》） */
+.bouten {
+  -webkit-text-emphasis: filled sesame;
+  text-emphasis: filled sesame;
+}
+
 /* 3〜4桁の数字（「2011」など）は1文字ずつ正立させる */
 .book-page--vertical .upright {
   text-orientation: upright;

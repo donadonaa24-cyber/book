@@ -1,7 +1,7 @@
 import type { BgmMood, MessageBlock, Novel, Paragraph, WritingMode } from "../types/novel";
 import type { ReadingAnchor } from "./progress";
 import { compareAnchor } from "./progress";
-import { fillText } from "./typeset";
+import { BOUTEN_MARK, fillText } from "./typeset";
 
 /**
  * 作品データ（章 → ページ → 段落）を、実際の画面サイズに合わせた「表示ページ」に割り付ける。
@@ -141,6 +141,8 @@ const ALNUM = /[A-Za-z0-9]/;
 function adjustSplit(text: string, n: number): number {
   while (n > 1 && NO_LINE_START.includes(text[n] ?? "")) n--;
   while (n > 1 && NO_LINE_END.includes(text[n - 1] ?? "")) n--;
+  // 傍点の目印と、それが付いた文字のあいだでは切らない
+  while (n > 1 && text[n - 1] === BOUTEN_MARK) n--;
   // 英単語（縦中横を含む）の途中では切らない
   while (n > 1 && ALNUM.test(text[n - 1]) && ALNUM.test(text[n] ?? "")) n--;
   return n;
