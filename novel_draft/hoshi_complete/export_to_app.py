@@ -10,6 +10,7 @@
 - 章：01.txt〜40.txt、終幕：41.txt、あとがき：42.txt（作者のあとがきを旧版 text_v1/10.txt からそのまま複製）
 - 1行目が章タイトル、本文の最初の行が BGM 指定（src/lib/manuscript.ts の書式）
 - 章の途中の BGM・挿絵は下の CUES で、本文中の一文を目印に挿入する
+- Markdown の段落間の空行は書き出さない（文庫本と同じく段落は字下げだけで区切り、場面転換は「◇」で示す）
 """
 import glob
 import os
@@ -52,16 +53,16 @@ CUES = {
     1: [
         ("　学習棟の歴史の授業は、必修だった。", "［BGM：日常］", "before"),
         ("　夜。居住棟の消灯時刻は決まっているけれど", "［BGM：静寂］", "before"),
-        ("　同じ夜、政府中央演算塔《エデン・コア》の最深部では", "［BGM：幻想］", "before"),
-        ("　同じ夜、政府中央演算塔《エデン・コア》の最深部では", f"［挿絵：{ILL}01-alma-core.webp｜政府中央演算塔《エデン・コア》］", "after"),
+        ("政府中央演算塔《エデン・コア》の最深部では人間の知らない計算が", "［BGM：幻想］", "before"),
+        ("政府中央演算塔《エデン・コア》の最深部では人間の知らない計算が", f"［挿絵：{ILL}01-alma-core.webp｜政府中央演算塔《エデン・コア》］", "after"),
         ("　湊は窓に張りついて笑っていた。", f"［挿絵：{ILL}08-brothers-haru-snow.webp］", "after"),
     ],
     2: [
-        ("　その夜、居住棟全体に低い警告音が流れた。", "［BGM：緊張］", "before"),
+        ("居住棟全体に低い警告音が流れた。", "［BGM：緊張］", "before"),
     ],
     3: [
         ("　銃声で目が覚めた。", f"［挿絵：{ILL}11-haru-guarding.webp］", "before"),
-        ("　次に目を覚ましたとき、そこは白い医療室だった。", "［BGM：静寂］", "before"),
+        ("そこは白い医療室だった。", "［BGM：静寂］", "before"),
     ],
     8: [
         ("　白い機械が、透真の足元で口を開いた。", f"［挿絵：{ILL}03-cyborg-dog.webp｜シロ］", "before"),
@@ -91,8 +92,8 @@ CUES = {
         ("　紗良は湊の膝の上でそれを聞いていた", "［BGM：切ない］", "before"),
     ],
     18: [
-        ("　発射場は巨大な縦坑の底にあり", f"［挿絵：{ILL}02-rocket-ruins.webp］", "after"),
-        ("　縦坑の上で何かが光り", "［BGM：緊張］", "before"),
+        ("　発射場は巨大な縦坑の底にあ", f"［挿絵：{ILL}02-rocket-ruins.webp］", "after"),
+        ("　縦坑の上で何かが光", "［BGM：緊張］", "before"),
         ("　透真は、熱を感じなかった。", "［BGM：幻想］", "before"),
     ],
     25: [
@@ -104,7 +105,7 @@ CUES = {
     ],
     29: [
         ("　遮断室の中に、寝台が一つ、置かれていた。", "［BGM：幻想］", "before"),
-        ("　三日後、五人は、拠点の西の丘の上に湊を埋めた。", "［BGM：余韻］", "before"),
+        ("五人は拠点の西の丘の上に湊を埋めた。", "［BGM：余韻］", "before"),
     ],
     30: [
         ("　空には、星が埋まっていた。", f"［挿絵：{ILL}13-bonfire-stars.webp］", "after"),
@@ -128,12 +129,12 @@ CUES = {
         ("　縦坑の入口に颯太が立っていた。", "［BGM：高揚］", "before"),
     ],
     38: [
-        ("　夕方、三人は、宇宙服を着て、西の丘に登った。", "［BGM：余韻］", "before"),
+        ("宇宙服を着て西の丘に登った。", "［BGM：余韻］", "before"),
         ("　三人の暮らしが、始まった。", "［BGM：日常］", "before"),
     ],
     40: [
         ("　二一二五年、四月。", "［BGM：静寂］", "before"),
-        ("　最後の夜、部屋には、湊と、シロだけがいた。", "［BGM：切ない］", "before"),
+        ("湊とシロだけがいた。", "［BGM：切ない］", "before"),
     ],
     41: [
         ("　――あたたかい。", "［BGM：幻想］", "before"),
@@ -163,6 +164,11 @@ def convert(md: str):
     return title, body
 
 
+def without_blank_lines(lines):
+    """段落間の空行を除く"""
+    return [l for l in lines if l.strip()]
+
+
 def norm(text):
     """目印の照合用。読点・空白・傍点の記号の違いは無視する（文体の推敲で読点を減らしても目印が外れないように）"""
     return re.sub(r"[、　 《》]", "", text)
@@ -171,7 +177,10 @@ def norm(text):
 def apply_cues(n, body):
     for anchor, directive, where in CUES.get(n, []):
         key = norm(anchor)
+        # 段落の頭で見つからなければ段落の途中も探す（推敲で段落をまとめても、その段落の前後に入れる）
         idx = next((i for i, l in enumerate(body) if norm(l).startswith(key)), None)
+        if idx is None:
+            idx = next((i for i, l in enumerate(body) if key in norm(l)), None)
         if idx is None:
             raise SystemExit(f"第{n}章：目印が見つかりません：{anchor}")
         if where == "after":
@@ -200,14 +209,15 @@ def main():
         n = int(m.group(1)) if m else 41
         title, body = convert(open(f, encoding="utf-8").read())
         body = apply_cues(n, body)
-        text = f"{title}\n［BGM：{START_BGM[n]}］\n\n" + "\n".join(body) + "\n"
+        text = f"{title}\n［BGM：{START_BGM[n]}］\n" + "\n".join(without_blank_lines(body)) + "\n"
         with open(os.path.join(out_dir(n), f"{n:02d}.txt"), "w", encoding="utf-8") as out:
             out.write(text)
     # 作者のあとがき（旧版の 10.txt）はそのまま最後に残す
     afterword = os.path.join(ROOT, "src", "data", "novels", "hoshi", "text_v1", "10.txt")
     if os.path.exists(afterword):
         with open(afterword, encoding="utf-8") as src, open(os.path.join(VOLUMES[2], "42.txt"), "w", encoding="utf-8") as out:
-            out.write(src.read())
+            lines = src.read().split("\n")
+            out.write("\n".join(lines[:1] + without_blank_lines(lines[1:])) + "\n")
     for vol in VOLUMES:
         print(f"{os.path.relpath(vol, ROOT)}: {len(glob.glob(os.path.join(vol, '*.txt')))} files")
 
