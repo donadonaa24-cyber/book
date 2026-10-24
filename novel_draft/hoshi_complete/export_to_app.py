@@ -10,6 +10,7 @@
 - 章：01.txt〜40.txt、終幕：41.txt、あとがき：42.txt（作者のあとがきを旧版 text_v1/10.txt からそのまま複製）
 - 1行目が章タイトル、本文の最初の行が BGM 指定（src/lib/manuscript.ts の書式）
 - 章の途中の BGM・挿絵は下の CUES で、本文中の一文を目印に挿入する
+- Markdown の段落間の空行は書き出さない（文庫本と同じく段落は字下げだけで区切り、場面転換は「◇」で示す）
 """
 import glob
 import os
@@ -163,6 +164,11 @@ def convert(md: str):
     return title, body
 
 
+def without_blank_lines(lines):
+    """段落間の空行を除く"""
+    return [l for l in lines if l.strip()]
+
+
 def norm(text):
     """目印の照合用。読点・空白・傍点の記号の違いは無視する（文体の推敲で読点を減らしても目印が外れないように）"""
     return re.sub(r"[、　 《》]", "", text)
@@ -200,14 +206,15 @@ def main():
         n = int(m.group(1)) if m else 41
         title, body = convert(open(f, encoding="utf-8").read())
         body = apply_cues(n, body)
-        text = f"{title}\n［BGM：{START_BGM[n]}］\n\n" + "\n".join(body) + "\n"
+        text = f"{title}\n［BGM：{START_BGM[n]}］\n" + "\n".join(without_blank_lines(body)) + "\n"
         with open(os.path.join(out_dir(n), f"{n:02d}.txt"), "w", encoding="utf-8") as out:
             out.write(text)
     # 作者のあとがき（旧版の 10.txt）はそのまま最後に残す
     afterword = os.path.join(ROOT, "src", "data", "novels", "hoshi", "text_v1", "10.txt")
     if os.path.exists(afterword):
         with open(afterword, encoding="utf-8") as src, open(os.path.join(VOLUMES[2], "42.txt"), "w", encoding="utf-8") as out:
-            out.write(src.read())
+            lines = src.read().split("\n")
+            out.write("\n".join(lines[:1] + without_blank_lines(lines[1:])) + "\n")
     for vol in VOLUMES:
         print(f"{os.path.relpath(vol, ROOT)}: {len(glob.glob(os.path.join(vol, '*.txt')))} files")
 
